@@ -35,7 +35,9 @@ df <-
 
 ```
 
-```{r}
+# 14 Day Incidence
+
+```{r incidence}
 
 ## DESCENT
 df.fit.descent <- 
@@ -74,27 +76,65 @@ predicted.incidence.increase <-
 break_even_date.increase <- 
   predicted.incidence.increase %>% filter(value>60) %>% slice(nrow(.)) %>% .[["Date"]]
 
-
-
-```
-
-```{r}
-
+# PLOT
 df %>%
   ggplot(.,aes(x=Date,y=INCIDENCE)) +
   geom_point() +
   scale_x_date(date_breaks = "1 week",limits=c(dmy("26-02-2020"),dmy("01-01-2021")),date_labels = "%d-%m") +
   scale_y_continuous(limits=c(0,300),breaks=seq(0,300,by=15)) +
-  geom_hline(yintercept = 60) +
+  geom_hline(yintercept = 60,color="green") +
   geom_abline(slope = -1,intercept = 200) +
   geom_line(data=predicted.incidence.descent,aes(x=Date,y=value),color="blue") +
   geom_line(data=predicted.incidence.increase,aes(x=Date,y=value),color="red") +
-  geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-08-2020"),dmy("01-08-2030"),by="1 day"),"month"))) +
+  geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-08-2020"),dmy("01-08-2030"),by="1 day"),"month")),color="blue") +
+  geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-08-2020"),dmy("01-08-2030"),by="1 day"),"week")),color="grey50") +
+  geom_hline(yintercept = c(100,125,150)) + 
   # geom_vline(xintercept = break_even_date,color="red") +
   theme(axis.text.x = element_text(angle = 90)) +
-  labs(x="Date",y="14-day Incidence Per 100,000")
+  labs(x="Date",y="14-day Incidence Per 100,000") 
+
 
 ```
+
+# Number of Tests
+
+```{r}
+
+  read.csv("Data/Test_pos_over_time.csv",sep = ";") %>% 
+  slice(c(1:(nrow(.)-2))) %>% 
+  as_tibble() %>% 
+  dplyr::mutate(Date=ymd(Date),
+                Tested=as.integer(gsub("\\.","",Tested))) %>% 
+  ggplot(.,aes(x=Date,y=Tested)) +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(x="Date",y="Number of Daily Tests") +
+  scale_x_date(date_breaks = "1 week",limits=c(dmy("26-02-2020"),dmy("01-01-2021")),date_labels = "%d-%m") +
+    scale_y_continuous(limits=c(0,60000),breaks=seq(0,60000,by=5000))
+
+
+
+```
+
+# % Positive
+
+```{r}
+
+  read.csv("Data/Test_pos_over_time.csv",sep = ";") %>% 
+  slice(c(1:(nrow(.)-2))) %>% 
+  as_tibble() %>% 
+  dplyr::mutate(Date=ymd(Date),
+                PosPct=as.numeric(gsub("\\,",".",PosPct))) %>% 
+  ggplot(.,aes(x=Date,y=PosPct)) +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(x="Date",y="% Positive") +
+  scale_x_date(date_breaks = "1 week",limits=c(dmy("26-02-2020"),dmy("01-01-2021")),date_labels = "%d-%m")
+
+
+
+```
+
 # Switzerland
 
 ```{r}
@@ -106,6 +146,10 @@ df.switzerland <-
   dplyr::mutate(Datum=as.Date(Datum,origin="1899-12-30")) %>% 
   dplyr::select(-Replikation_dt)
 
+
+```
+
+```{r}
 
 ### INCIDENCE
 
@@ -148,6 +192,7 @@ df.switzerland.positive.perc_positive <- df.switzerland %>%
   rename(Date=Datum,
          NewPositive=Number_of_tests)
 
+## Percent positive
 ggplot(df.switzerland.positive.perc_positive,aes(x=Date,y=Perc_Positive)) +
   geom_line() +
   scale_x_date(date_breaks = "2 weeks",
@@ -158,19 +203,12 @@ ggplot(df.switzerland.positive.perc_positive,aes(x=Date,y=Perc_Positive)) +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x="Date",y="% Positive")
   
-
-
-```
-
-
-
-```{r swiss incidence}
-
+## Incidence
 df.switzerland.positive %>%
   ggplot(.,aes(x=Date,y=INCIDENCE)) +
   geom_point() +
   scale_x_date(date_breaks = "1 week",limits=c(dmy("26-02-2020"),dmy("01-11-2020")),date_labels = "%d-%m") +
-  scale_y_continuous(limits=c(0,5000),breaks=seq(0,5000,by=15)) +
+  scale_y_continuous(limits=c(0,5000),breaks=seq(0,5000,by=250)) +
   geom_hline(yintercept = 60) +
   geom_abline(slope = -1,intercept = 200) +
   geom_line(data=predicted.incidence.increase.swiss,aes(x=Date,y=value),color="red") +
@@ -180,6 +218,8 @@ df.switzerland.positive %>%
   labs(x="Date",y="14-day Incidence Per 100,000")
 
 ```
+
+
 
 
 
