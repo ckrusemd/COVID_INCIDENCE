@@ -7,7 +7,8 @@ output:
 
 ```{r}
 pacman::p_load(openxlsx,tibbletime,tidyverse,lubridate)
-knitr::opts_knit$set(root.dir = '/Users/ChristianKruse\ 1/Documents/OneDrivePrivat/OneDrive/COVID_INCIDENCE')
+knitr::opts_knit$set(root.dir = '/Users/ChristianKruse\ 1/Documents/OneDrivePrivat/OneDrive/COVID_INCIDENCE',
+                     scipen=999)
 data_files <- file.info(list.files(path = "Data",pattern = ".zip"))
 ```
 
@@ -24,7 +25,7 @@ rolling_sum <- rollify(.f = sum, window = 14)
 ```{r}
 
 df <- 
-  read.csv("Test_pos_over_time.csv",sep = ";") %>%
+  read.csv("Data/Test_pos_over_time.csv",sep = ";") %>%
   slice(c(1:(nrow(.)-2))) %>% 
   tbl_df() %>%
   dplyr::mutate(ROLLING_SUM=lag(rolling_sum(NewPositive))) %>%
@@ -32,21 +33,48 @@ df <-
   dplyr::mutate(Date=ymd(Date)) %>%
   dplyr::select(Date,NewPositive,ROLLING_SUM,INCIDENCE)
 
-df.fit <- 
+```
+
+```{r}
+
+## DESCENT
+df.fit.descent <- 
   df %>%
-  filter(Date>=ymd("2020-09-29"))
+  filter(Date>=ymd("2020-09-29")) %>%
+  filter(Date<=ymd("2020-10-14"))
 
-fit.incidence <- 
-  lm(log10(INCIDENCE)~Date,data=df.fit)
+fit.incidence.descent <- 
+  lm(log10(INCIDENCE)~Date,data=df.fit.descent)
 
-predicted.incidence <- 
-  10^predict(fit.incidence,
-             data.frame(Date=seq.Date(ymd("2020-09-29"),ymd("2021-01-01"),by = "1 day"))) %>%
+predicted.incidence.descent <- 
+  10^predict(fit.incidence.descent,
+             data.frame(Date=seq.Date(ymd("2020-09-29"),ymd("2021-03-01"),by = "1 day"))) %>%
   tbl_df() %>%
-  dplyr::mutate(Date=seq.Date(ymd("2020-09-29"),ymd("2021-01-01"),by = "1 day"))
+  dplyr::mutate(Date=seq.Date(ymd("2020-09-29"),ymd("2021-03-01"),by = "1 day"))
 
-break_even_date <- 
-  predicted.incidence %>% filter(value>60) %>% slice(nrow(.)) %>% .[["Date"]]
+break_even_date.descent <- 
+  predicted.incidence.descent %>% filter(value>60) %>% slice(nrow(.)) %>% .[["Date"]]
+
+## INCREASE
+df.fit.increase <- 
+  df %>%
+  filter(Date>=ymd("2020-10-14"))
+
+fit.incidence.increase <- 
+  lm(log10(INCIDENCE)~Date,data=df.fit.increase)
+
+summary(fit.incidence.increase)
+
+predicted.incidence.increase <- 
+  10^predict(fit.incidence.increase,
+             data.frame(Date=seq.Date(ymd("2020-10-14"),ymd("2021-03-01"),by = "1 day"))) %>%
+  tbl_df() %>%
+  dplyr::mutate(Date=seq.Date(ymd("2020-10-14"),ymd("2021-03-01"),by = "1 day"))
+
+break_even_date.increase <- 
+  predicted.incidence.increase %>% filter(value>60) %>% slice(nrow(.)) %>% .[["Date"]]
+
+
 
 ```
 
@@ -56,14 +84,114 @@ df %>%
   ggplot(.,aes(x=Date,y=INCIDENCE)) +
   geom_point() +
   scale_x_date(date_breaks = "1 week",limits=c(dmy("26-02-2020"),dmy("01-01-2021")),date_labels = "%d-%m") +
-  scale_y_continuous(limits=c(0,125),breaks=seq(0,125,by=5)) +
+  scale_y_continuous(limits=c(0,300),breaks=seq(0,300,by=15)) +
   geom_hline(yintercept = 60) +
   geom_abline(slope = -1,intercept = 200) +
-  geom_line(data=predicted.incidence,aes(x=Date,y=value),color="red") +
-  geom_vline(xintercept = break_even_date,color="red") +
-  theme(axis.text.x = element_text(angle = 90))
+  geom_line(data=predicted.incidence.descent,aes(x=Date,y=value),color="blue") +
+  geom_line(data=predicted.incidence.increase,aes(x=Date,y=value),color="red") +
+  geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-08-2020"),dmy("01-08-2030"),by="1 day"),"month"))) +
+  # geom_vline(xintercept = break_even_date,color="red") +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(x="Date",y="14-day Incidence Per 100,000")
 
 ```
+# Switzerland
+
+```{r}
+
+## Switzerland data
+df.switzerland <-
+  openxlsx::read.xlsx("Data/Dashboard_3_COVID19_labtests_positivity.xlsx") %>% 
+  as_tibble() %>% 
+  dplyr::mutate(Datum=as.Date(Datum,origin="1899-12-30")) %>% 
+  dplyr::select(-Replikation_dt)
+
+
+### INCIDENCE
+
+# Positive
+df.switzerland.positive <- df.switzerland %>% 
+  filter(Outcome_tests=="Positive") %>%
+  rename(Date=Datum,
+         NewPositive=Number_of_tests) %>% 
+  dplyr::mutate(ROLLING_SUM=lag(rolling_sum(NewPositive))) %>%
+  dplyr::mutate(INCIDENCE=ROLLING_SUM/58) %>%
+  dplyr::mutate(Date=ymd(Date)) %>%
+  dplyr::select(Date,NewPositive,ROLLING_SUM,INCIDENCE)
+
+# INCREASE
+df.fit.increase.swiss <- 
+  df.switzerland.positive %>%
+  filter(Date>=ymd("2020-10-01"))
+
+fit.incidence.increase.swiss <- 
+  lm(log10(INCIDENCE)~Date,data=df.fit.increase.swiss)
+
+summary(fit.incidence.increase.swiss)
+
+predicted.incidence.increase.swiss <- 
+  10^predict(fit.incidence.increase.swiss,
+             data.frame(Date=seq.Date(ymd("2020-10-14"),ymd("2021-03-01"),by = "1 day"))) %>%
+  tbl_df() %>%
+  dplyr::mutate(Date=seq.Date(ymd("2020-10-14"),ymd("2021-03-01"),by = "1 day"))
+
+break_even_date.increase.swiss <- 
+  predicted.incidence.increase.swiss %>% filter(value>60) %>% slice(nrow(.)) %>% .[["Date"]]
+
+### POSITIVE PERCENTAGE
+
+df.switzerland.positive.perc_positive <- df.switzerland %>% 
+  group_by(Datum) %>% 
+  dplyr::mutate(Num_Test=sum(Number_of_tests)) %>% 
+  filter(Outcome_tests=="Positive") %>% 
+  dplyr::mutate(Perc_Positive=sum(Number_of_tests)/Num_Test) %>%
+  rename(Date=Datum,
+         NewPositive=Number_of_tests)
+
+ggplot(df.switzerland.positive.perc_positive,aes(x=Date,y=Perc_Positive)) +
+  geom_line() +
+  scale_x_date(date_breaks = "2 weeks",
+               limits=c(dmy("26-02-2020"),dmy("01-01-2021")),
+               date_labels = "%d-%m") +
+  geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-08-2020"),
+                                                     dmy("01-08-2030"),by="1 day"),"month"))) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(x="Date",y="% Positive")
+  
+
+
+```
+
+
+
+```{r swiss incidence}
+
+df.switzerland.positive %>%
+  ggplot(.,aes(x=Date,y=INCIDENCE)) +
+  geom_point() +
+  scale_x_date(date_breaks = "1 week",limits=c(dmy("26-02-2020"),dmy("01-11-2020")),date_labels = "%d-%m") +
+  scale_y_continuous(limits=c(0,5000),breaks=seq(0,5000,by=15)) +
+  geom_hline(yintercept = 60) +
+  geom_abline(slope = -1,intercept = 200) +
+  geom_line(data=predicted.incidence.increase.swiss,aes(x=Date,y=value),color="red") +
+  geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-08-2020"),dmy("01-08-2030"),by="1 day"),"month"))) +
+  # geom_vline(xintercept = break_even_date,color="red") +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(x="Date",y="14-day Incidence Per 100,000")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
