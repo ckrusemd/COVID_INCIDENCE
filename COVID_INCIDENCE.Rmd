@@ -6,16 +6,18 @@ output:
 ---
 
 ```{r}
-pacman::p_load(openxlsx,tibbletime,tidyverse,lubridate)
-knitr::opts_knit$set(root.dir = '/Users/ChristianKruse\ 1/Documents/OneDrivePrivat/OneDrive/COVID_INCIDENCE_2',
+pacman::p_load(openxlsx,tibbletime,tidyverse,lubridate,tidyr,dplyr,tibble)
+# knitr::opts_knit$set(root.dir = '/Users/ChristianKruse\ 1/Documents/OneDrivePrivat/OneDrive/COVID_INCIDENCE_2',
+#                      scipen=999)
+knitr::opts_knit$set(root.dir = 'C:/Users/Christian/OneDrive/COVID_INCIDENCE_2',
                      scipen=999)
-data_files <- file.info(list.files(path = "Data",pattern = ".zip",full.names = T)) %>% 
+data_files <- file.info(list.files(path = "Data",pattern = ".zip",full.names = TRUE)) %>% 
   slice_max(mtime)
 ```
 
 ```{r unzip}
 current_file <- row.names(data_files)
-unzip(current_file,exdir = "Data",overwrite = T)
+unzip(current_file,exdir = "Data",overwrite = TRUE)
 ```
 
 ```{r}
@@ -25,10 +27,34 @@ rolling_sum <- rollify(.f = sum, window = 14)
 
 ```{r}
 
-df <- 
-  read.csv("Data/Test_pos_over_time.csv",sep = ";") %>%
-  slice(c(1:(nrow(.)-2))) %>% 
-  as_tibble() %>%
+setClass("num.with.commas")
+setAs("character", "num.with.commas", 
+        function(from) as.numeric(gsub(",", "", from) ) )
+
+df <-
+  read.csv("Data/Test_pos_over_time.csv",
+           sep = ";",
+           colClasses=c('character',
+                        'character',
+                        'character',
+                        'character',
+                        'character',
+                        'character',
+                        'character')) %>%
+  dplyr::slice(c(1:(nrow(.)-2))) %>% 
+  as_tibble()
+
+df$NewPositive <- df  %>% 
+  pull(NewPositive) %>% 
+  trimws %>% 
+  gsub("\\.","",.)
+
+df <- df %>% 
+  dplyr::mutate(NewPositive=readr::parse_number(NewPositive)) %>% 
+  dplyr::mutate(NewPositive==gsub(pattern = "\\.",replacement = "_",x = NewPositive)) %>% 
+  dplyr::mutate(NewPositive==gsub(pattern = ",",replacement = "",x = NewPositive)) %>% 
+  dplyr::mutate(Date=ymd(Date),
+                NewPositive=as.integer(NewPositive)) %>% 
   dplyr::mutate(ROLLING_SUM=lag(rolling_sum(NewPositive))) %>%
   dplyr::mutate(INCIDENCE=ROLLING_SUM/(5824857/100000)) %>%
   dplyr::mutate(Date=ymd(Date)) %>%
@@ -40,7 +66,7 @@ df <-
 
 ```{r incidence}
 
-## DESCENT
+## DESCENT #1
 df.fit.descent <- 
   df %>%
   filter(Date>=ymd("2020-09-29")) %>%
@@ -58,10 +84,11 @@ predicted.incidence.descent <-
 break_even_date.descent <- 
   predicted.incidence.descent %>% filter(value>60) %>% slice(nrow(.)) %>% .[["Date"]]
 
-## INCREASE
+## INCREASE #1
 df.fit.increase <- 
   df %>%
-  filter(Date>=ymd("2020-10-14"))
+  filter(Date>=ymd("2020-10-14")) %>%
+  filter(Date<=ymd("2020-11-03"))
 
 fit.incidence.increase <- 
   lm(log10(INCIDENCE)~Date,data=df.fit.increase)
@@ -70,25 +97,53 @@ summary(fit.incidence.increase)
 
 predicted.incidence.increase <- 
   10^predict(fit.incidence.increase,
-             data.frame(Date=seq.Date(ymd("2020-10-14"),ymd("2021-03-01"),by = "1 day"))) %>%
+             data.frame(Date=seq.Date(ymd("2020-10-14"),ymd("2020-11-03"),by = "1 day"))) %>%
   tbl_df() %>%
-  dplyr::mutate(Date=seq.Date(ymd("2020-10-14"),ymd("2021-03-01"),by = "1 day"))
+  dplyr::mutate(Date=seq.Date(ymd("2020-10-14"),ymd("2020-11-03"),by = "1 day"))
 
 break_even_date.increase <- 
   predicted.incidence.increase %>% filter(value>60) %>% slice(nrow(.)) %>% .[["Date"]]
+
+## INCREASE #2
+df.fit.increase_2 <- 
+  df %>%
+  filter(Date>=ymd("2020-11-12"))
+
+fit.incidence.increase <- 
+  lm(log10(INCIDENCE)~Date,data=df.fit.increase_2)
+
+summary(fit.incidence.increase)
+
+predicted.incidence.increase_2 <- 
+  10^predict(fit.incidence.increase,
+             data.frame(Date=seq.Date(ymd("2020-11-20"),ymd("2021-03-01"),by = "1 day")),
+        interval = "prediction") %>%
+  tbl_df() %>%
+  dplyr::mutate(Date=seq.Date(ymd("2020-11-20"),ymd("2021-03-01"),by = "1 day")) %>% 
+  dplyr::rename(value=fit)
+
+break_even_date.increase_2 <- 
+  predicted.incidence.increase_2 %>% filter(value>60) %>% slice(nrow(.)) %>% .[["Date"]]
+
+# Most recent 14 days
+
+df %>% tail(14) %>% knitr::kable()
 
 # PLOT
 df %>%
   ggplot(.,aes(x=Date,y=INCIDENCE)) +
   geom_point() +
-  scale_x_date(date_breaks = "1 week",limits=c(dmy("26-02-2020"),dmy("01-01-2021")),date_labels = "%d-%m") +
-  scale_y_continuous(limits=c(0,300),breaks=seq(0,300,by=15)) +
+  scale_x_date(date_breaks = "1 week",limits=c(dmy("26-02-2020"),dmy("01-03-2021")),date_labels = "%d-%m") +
+  scale_y_continuous(limits=c(0,750),breaks=seq(0,750,by=25)) +
   geom_hline(yintercept = 60,color="green") +
   geom_abline(slope = -1,intercept = 200) +
   geom_line(data=predicted.incidence.descent,aes(x=Date,y=value),color="blue") +
   geom_line(data=predicted.incidence.increase,aes(x=Date,y=value),color="red") +
+  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=value),color="green") +
+  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=lwr),color="black") +
+  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=upr),color="black") +
   geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-08-2020"),dmy("01-08-2030"),by="1 day"),"month")),color="blue") +
-  geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-08-2020"),dmy("01-08-2030"),by="1 day"),"week")),color="grey50") +
+  # geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-08-2020"),dmy("01-08-2030"),by="1 day"),"week")),color="grey50") +
   geom_hline(yintercept = c(100,125,150)) + 
   # geom_vline(xintercept = break_even_date,color="red") +
   theme(axis.text.x = element_text(angle = 90)) +
@@ -111,7 +166,7 @@ df %>%
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x="Date",y="Number of Daily Tests") +
   scale_x_date(date_breaks = "1 week",limits=c(dmy("26-02-2020"),dmy("01-01-2021")),date_labels = "%d-%m") +
-    scale_y_continuous(limits=c(0,60000),breaks=seq(0,60000,by=5000))
+    scale_y_continuous(limits=c(0,100000),breaks=seq(0,100000,by=5000))
 
 
 
@@ -140,7 +195,7 @@ df %>%
 
 ```{r}
 
-data_files <- file.info(list.files(path = "Data",pattern = "labtests_positivity",full.names = T)) %>% 
+data_files <- file.info(list.files(path = "Data",pattern = "labtests_positivity",full.names = TRUE)) %>% 
   slice_max(mtime)
 
 ## Switzerland data
@@ -167,10 +222,13 @@ df.switzerland.positive <- df.switzerland %>%
   dplyr::mutate(Date=ymd(Date)) %>%
   dplyr::select(Date,NewPositive,ROLLING_SUM,INCIDENCE)
 
+df.switzerland.positive %>% as_tibble() %>% tail(14) %>% knitr::kable() 
+
 # INCREASE
 df.fit.increase.swiss <- 
   df.switzerland.positive %>%
-  filter(Date>=ymd("2020-10-01"))
+  filter(Date>=ymd("2020-10-01")) %>% 
+  filter(Date<=ymd("2020-11-09"))
 
 fit.incidence.increase.swiss <- 
   lm(log10(INCIDENCE)~Date,data=df.fit.increase.swiss)
@@ -185,6 +243,27 @@ predicted.incidence.increase.swiss <-
 
 break_even_date.increase.swiss <- 
   predicted.incidence.increase.swiss %>% filter(value>60) %>% slice(nrow(.)) %>% .[["Date"]]
+
+
+# DECREASE in NOVEMBER
+df.fit.decrease.swiss <- 
+  df.switzerland.positive %>%
+  filter(Date>=ymd("2020-11-09"))
+
+fit.incidence.decrease.swiss <- 
+  lm(log10(INCIDENCE)~Date,data=df.fit.decrease.swiss)
+
+summary(fit.incidence.decrease.swiss)
+
+predicted.incidence.decrease.swiss <- 
+  10^predict(fit.incidence.decrease.swiss,
+             data.frame(Date=seq.Date(ymd("2020-11-09"),ymd("2021-06-01"),by = "1 day"))) %>%
+  tbl_df() %>%
+  dplyr::mutate(Date=seq.Date(ymd("2020-11-09"),ymd("2021-06-01"),by = "1 day"))
+
+break_even_date.decrease.swiss <- 
+  predicted.incidence.decrease.swiss %>% filter(value>60) %>% slice(nrow(.)) %>% .[["Date"]]
+
 
 ### POSITIVE PERCENTAGE
 
@@ -212,11 +291,12 @@ ggplot(df.switzerland.positive.perc_positive,aes(x=Date,y=Perc_Positive)) +
 df.switzerland.positive %>%
   ggplot(.,aes(x=Date,y=INCIDENCE)) +
   geom_point() +
-  scale_x_date(date_breaks = "1 week",limits=c(dmy("26-02-2020"),dmy("01-11-2020")),date_labels = "%d-%m") +
-  scale_y_continuous(limits=c(0,1250),breaks=seq(0,1250,by=250)) +
+  scale_x_date(date_breaks = "2 weeks",limits=c(dmy("26-02-2020"),dmy("01-05-2021")),date_labels = "%d-%m") +
+  scale_y_continuous(limits=c(0,1750),breaks=seq(0,1750,by=250)) +
   geom_hline(yintercept = 60) +
   geom_abline(slope = -1,intercept = 200) +
   geom_line(data=predicted.incidence.increase.swiss,aes(x=Date,y=value),color="red") +
+  geom_line(data=predicted.incidence.decrease.swiss,aes(x=Date,y=value),color="green") +
   geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-08-2020"),dmy("01-08-2030"),by="1 day"),"month"))) +
   theme_bw(base_size = 12) +
   # geom_vline(xintercept = break_even_date,color="red") +
@@ -245,7 +325,7 @@ df.ch60 <- bind_rows(df %>% dplyr::mutate(Country="DK"),
   geom_hline(yintercept = 0,color="gray50") +
   theme_bw(base_size = 10) +
   theme(axis.text.x = element_text(angle = 90)) +
-  scale_x_date(date_breaks = "2 weeks",limits=c(dmy("26-02-2020"),dmy("01-11-2020")),date_labels = "%d-%m") +
+  scale_x_date(date_breaks = "2 weeks",limits=c(dmy("26-02-2020"),dmy("01-02-2021")),date_labels = "%d-%m") +
   geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-03-2020"),dmy("01-08-2030"),by="1 day"),"month"))) +
     labs(x=NULL,y="Forskel i 14-dages incidence per 100.000 (DK - 'CH+60')")
 
