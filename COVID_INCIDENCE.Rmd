@@ -166,7 +166,8 @@ df %>%
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x="Date",y="Number of Daily Tests") +
   scale_x_date(date_breaks = "1 week",limits=c(dmy("26-02-2020"),dmy("01-01-2021")),date_labels = "%d-%m") +
-    scale_y_continuous(limits=c(0,150000),breaks=seq(0,150000,by=5000))
+    scale_y_continuous(limits=c(0,150000),breaks=seq(0,150000,by=5000)) +
+  geom_smooth()
 
 
 
