@@ -9,3 +9,9 @@ Docker environment in early phases that would allow it to be restarted daily and
 * Daily vaccination completion
 * Hospitalizations and mortality
 * Vaccination completion
+
+Please go here to view the Pages deployment:
+
+```
+https://ckrusemd.github.io/denmark-covid-incidence/
+```
