@@ -3,6 +3,10 @@ title: "Denmark Covid Incidence (SSI Data)"
 output:
   html_document:
     df_print: paged
+knit: (function(inputFile, encoding) { 
+    rmarkdown::render(inputFile,
+                      encoding=encoding, 
+                      output_file=file.path('docs/index.html')) })
 ---
 
 ```{r include=FALSE }
@@ -240,6 +244,105 @@ df %>%
   # geom_vline(xintercept = break_even_date,color="red") +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x="Date",y="14-day Incidence Per 100,000") 
+
+```
+
+### Antigen Test,  PCR
+
+```{r}
+
+col_number = ncol(read.csv(paste0(temp_dir,"/Antigentests_pr_dag.csv"),
+           sep = ";"))
+
+
+df.antigen_pcr <-
+  read.csv(paste0(temp_dir,"/Antigentests_pr_dag.csv"),
+           sep = ";",
+           colClasses=rep("character",col_number)) %>%
+  dplyr::select(Dato,AG_testede,AG_pos,AGpos_PCRpos,AGposPCRneg,AGnegPCRpos,AGnegPCRneg) %>% 
+  dplyr::rename(TP=AGpos_PCRpos,
+                FP=AGposPCRneg,
+                FN=AGnegPCRpos,
+                TN=AGnegPCRneg) %>% 
+  dplyr::mutate(TP=as.integer(TP),
+                FP=as.integer(FP),
+                FN=as.integer(FN),
+                TN=as.integer(TN),
+                Total=(TP+FP+FN+TN)) %>% 
+    dplyr::mutate(TP_frac=TP/Total,
+                  FP_frac=FP/Total,
+                  FN_frac=FN/Total,
+                  TN_frac=TN/Total) %>% 
+  dplyr::mutate(Dato=ymd(Dato)) %>% 
+  dplyr::mutate(Sensitivity=TP/(TP+FN),
+                Specificity=TN/(TN+FP))
+
+```
+
+```{r}
+
+df.antigen_pcr %>% 
+  dplyr::select(Dato,TP_frac:TN_frac) %>% 
+  gather(value,num,TP_frac:TN_frac) %>% 
+  ggplot(.,aes(x=Dato,y=num,fill=value)) +
+  geom_bar(stat="identity") +
+  scale_x_date(date_breaks = "14 days") +
+  theme_bw()
+
+```
+
+```{r}
+
+df.antigen_pcr %>% 
+  dplyr::select(Dato,Sensitivity:Specificity) %>% 
+  gather(value,num,Sensitivity:Specificity) %>% 
+  ggplot(.,aes(x=Dato,y=num,color=value)) +
+  geom_line() +
+  scale_x_date(date_breaks = "14 days") +
+  scale_y_continuous(limits=c(0,1)) +
+  theme_bw()
+```
+
+### 250 Incidence Risk
+
+```{r}
+
+rolling_sum <- rollify(.f = sum, window = 7)
+
+#Befolkningstal 
+df.population <- read.csv(paste0(temp_dir,"/Municipality_test_pos.csv"),
+           sep = ";", encoding = "UTF-8") %>% 
+  dplyr::select(Kommune_.navn.,Befolkningstal) %>% 
+  rename(Muni=Kommune_.navn.) %>% 
+  dplyr::mutate(Befolkningstal=1000*Befolkningstal)
+
+# Time series
+col_number = ncol(read.csv(paste0(temp_dir,"/Municipality_cases_time_series.csv"),
+           sep = ";"))
+
+df.250 <-
+  read.csv(paste0(temp_dir,"/Municipality_cases_time_series.csv"),
+           sep = ";",
+           encoding = "UTF-8",
+           colClasses=rep("character",col_number)) %>%
+    gather(Muni,Value,Roskilde:`Samsø`) %>% 
+    dplyr::select(-NA.) %>% 
+    dplyr::mutate(Value=as.integer(Value),
+                  SampleDate=ymd(SampleDate)) %>% 
+  as_tibble() %>% 
+  inner_join(df.population) %>% 
+  group_by(Muni) %>% 
+  arrange(Muni,SampleDate) %>% 
+  dplyr::mutate(ROLLING_SUM=lag(rolling_sum(Value))) %>%
+  dplyr::mutate(INCIDENCE=ROLLING_SUM/(Befolkningstal/100000)) %>% 
+  filter(SampleDate>=Sys.Date()-days(21))
+
+df.250 %>% 
+  ggplot(.,aes(x=SampleDate,y=INCIDENCE,color=Muni)) +
+  geom_line() +
+  theme_bw()+
+  theme(legend.position="null") +
+  geom_hline(yintercept = 250,color="red",size=2)
 
 ```
 
