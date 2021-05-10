@@ -2,21 +2,24 @@ on:
   push:
      branches:
        - main
+  schedule:
+    - cron:  '10 12 * * *' # runs every day numbers are out at 14:00
 
   
 
-name: renderbook
+name: dk-covid-render
 
 jobs:
   bookdown:
-    name: Render-Book
-    runs-on: macOS-latest
+    name: renderbook
+    #runs-on: macOS-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - uses: r-lib/actions/setup-r@v1
       - uses: r-lib/actions/setup-pandoc@v1
       - name: Install rmarkdown
-        run: Rscript -e 'install.packages(c("rmarkdown","bookdown"))'
+        run: Rscript -e 'install.packages(c("rmarkdown","bookdown","pacman"))'
       - name: Render Book
         run: Rscript -e 'bookdown::render_book("index.Rmd")'
       - uses: actions/upload-artifact@v1
