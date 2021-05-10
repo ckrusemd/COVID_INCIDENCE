@@ -5,12 +5,13 @@ on:
 
   
 
-name: renderbook
+name: dk-covid-render
 
 jobs:
   bookdown:
-    name: Render-Book
-    runs-on: macOS-latest
+    name: renderbook
+    #runs-on: macOS-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - uses: r-lib/actions/setup-r@v1
