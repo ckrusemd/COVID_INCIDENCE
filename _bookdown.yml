@@ -1,0 +1,3 @@
+rmd_files: ["index.Rmd",
+"COVID_INCIDENCE.Rmd"]
+output_dir: "docs"

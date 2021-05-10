@@ -1,0 +1,21 @@
+--- 
+title: "Denmark Covid Incidence (SSI Data)"
+author: "Christian Kruse"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+github-repo: ckrusemd/denmark-covid-incidence
+description: ""
+---
+
+# Denmark Covid Incidence (SSI Data)
+
+```{r include=FALSE}
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+```
