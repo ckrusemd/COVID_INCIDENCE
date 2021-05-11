@@ -30,6 +30,8 @@ jobs:
         run: sudo apt-get -y install libcurl4-gnutls-dev
       - name: Install rvest
         run: Rscript -e 'install.packages(c("rvest"))'
+      - name: Install Rjava before tabulizer
+        run:  Rscript -e 'install.packages("rJava"); library(rJava); install.packages("devtools");devtools::install_github("ropensci/tabulizer", args="--no-multiarch")'
       - name: Install rmarkdown
         run: Rscript -e 'install.packages(c("rmarkdown","bookdown","pacman","devtools","RCurl","rPref","rvest","epibasix","tabulizer"))'
       - name: Render Book
