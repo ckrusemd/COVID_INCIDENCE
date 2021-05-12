@@ -3,7 +3,7 @@ on:
      branches:
        - main
   schedule:
-    - cron:  '10 12 * * *' # runs every day numbers are out at 14:00
+    - cron:  '10 12 * * *' # runs every day numbers are out at 14:10
 
 name: dk-covid-render
 
@@ -37,7 +37,7 @@ jobs:
       - name: Install rmarkdown
         run: Rscript -e 'install.packages(c("rmarkdown","bookdown","pacman","devtools","RCurl","rPref","rvest","epibasix","tabulizer"))'
       - name: Render Book
-        run: Rscript -e 'bookdown::render_book("index.Rmd")'
+        run: Rscript -e 'bookdown::render_book("files/index.Rmd")'
       - uses: actions/upload-artifact@v1
         with:
           name: _book
