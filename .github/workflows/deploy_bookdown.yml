@@ -58,8 +58,9 @@ jobs:
       uses: Cecilapp/GitHub-Pages-deploy@v3
       with:
         build_dir: _book/
-        email: ${{ secrets.EMAIL }}
+        email: ${{ secrets.EMAIL }}optional
+        jekyll: no                     # optional
       env:
-        GH_TOKEN: ${{ secrets.GH_PAT }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         EMAIL: ${{ secrets.EMAIL }} 
         BUILD_DIR: _book/
