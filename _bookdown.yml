@@ -1,2 +1,2 @@
-rmd_files: ["files/index.Rmd",
-"files/COVID_INCIDENCE.Rmd"]
+rmd_files: ["index.Rmd",
+"COVID_INCIDENCE.Rmd"]
