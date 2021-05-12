@@ -13,6 +13,8 @@ knit: (function(inputFile, encoding) {
 knitr::opts_chunk$set(echo=FALSE, results='hide', message=FALSE, warning=FALSE)
 ```
 
+This report was compiled `r Sys.time()`.
+
 ```{r }
 pacman::p_load(openxlsx,tibbletime,tidyverse,lubridate,tidyr,dplyr,tibble,drc,Ryacas,rvest,drc,tabulizer,directlabels)
 
@@ -28,6 +30,12 @@ temp_dir = tempdir()
 zip_path = paste0(temp_dir,"/temp.zip")
 download.file(current_url,zip_path, mode="wb")
 unzip(zipfile = zip_path,exdir = temp_dir)
+```
+
+The following files were downloaded:
+
+```{r echo=TRUE}
+file.info(list.files(temp_dir))
 ```
 
 ```{r}
@@ -347,6 +355,7 @@ p= df.250  %>%
   theme_bw()+
   theme(legend.position="null") +
   geom_hline(yintercept = 250,color="red",size=1.1) +
+  geom_hline(yintercept = 200,color="yellow",size=1.1) +
   labs(x="Date",y="7-day Incidence Per 100,000") +
   scale_x_date(date_breaks = "2 days",date_labels = "%d %b",expand=c(0,3)) +
   scale_y_continuous(limits=c(0,500),breaks=seq(0,500,by=25))
@@ -390,7 +399,7 @@ df.antigen_pcr <-
 
 ## Confusion Matrix (last 7 days)
 
-```{r}
+```{r echo=TRUE}
 
 library(epibasix)
 
@@ -427,6 +436,20 @@ df.antigen_pcr %>%
 ```
 
 ```{r}
+df.antigen_pcr %>% 
+  dplyr::select(Dato,TP_frac,FN_frac,FP_frac) %>% 
+  gather(value,num,TP_frac:FP_frac) %>% 
+  ggplot(.,aes(x=Dato,y=num,color=value)) +
+  geom_point() +
+  geom_line() +
+  scale_x_date(date_breaks = "14 days",date_labels = "%b %d",expand=c(0,0)) +
+  scale_y_continuous(labels = scales::percent,expand=c(0,0),breaks=seq(0,1,by=0.01),limits=c(0,0.05)) +
+  theme_bw()  +
+  labs(x="Date",y="Fraction") +
+  theme(legend.position="bottom")
+```
+
+```{r}
 
 df.antigen_pcr %>% 
   dplyr::select(Dato,Sensitivity:Specificity) %>% 
@@ -452,7 +475,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   dplyr::mutate(Date=ymd(Date),
                 Tested=as.integer(gsub("\\.","",Tested))) %>% 
   ggplot(.,aes(x=Date,y=Tested)) +
-  geom_line() +
+  geom_point() +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x="Date",y="Number of Daily Tests") +
   scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),dmy("01-07-2021")),date_labels = "%Y-%b") +
@@ -494,7 +517,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   as_tibble() %>% 
   dplyr::mutate(Date=ymd(Date),
                 Tested=as.integer(gsub("\\.","",Tested)),
-                PosPct=as.numeric(gsub("\\,",".",PosPct))) %>% 
+                PosPct=as.numeric(gsub("\\,",".",PosPct))/100) %>% 
   dplyr::mutate(Month=paste0(year(Date),"-",months(Date))) %>% 
   filter(Date>=dmy("01-05-2020")) %>% 
   ggplot(.,aes(x=Tested,y=PosPct)) +
@@ -502,7 +525,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   geom_smooth(aes(color=Month)) +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x="Number of tests",y="Positive Percentage") +
-  scale_y_continuous(limits=c(0,NA),breaks=seq(0,5,by=0.25))+
+  scale_y_continuous(limits=c(0,NA),breaks=seq(0,1,by=0.0025),labels = scales::percent,expand=c(0,0))+
   scale_x_continuous(limits=c(0,NA),breaks=seq(0,250000,by=10000))
 
 
@@ -511,21 +534,27 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
 
 # % Positive
 
+## Since March 2020
+
 ```{r  }
 
 read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>% 
   slice(c(1:(nrow(.)-4))) %>% 
   as_tibble() %>% 
   dplyr::mutate(Date=ymd(Date),
-                PosPct=as.numeric(gsub("\\,",".",PosPct))) %>% 
+                PosPct=as.numeric(gsub("\\,",".",PosPct))/100) %>% 
   ggplot(.,aes(x=Date,y=PosPct)) +
   geom_line() +
+  theme_bw() +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x="Date",y="% Positive") +
   scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),dmy("01-07-2021")),date_labels = "%Y-%b") +
+  scale_y_continuous(limits=c(0,NA),labels = scales::percent,expand=c(0,0)) +
   geom_smooth(span=0.2) 
 
 ```
+
+## Recent Month
 
 ```{r}
 
@@ -533,15 +562,15 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   slice(c(1:(nrow(.)-4))) %>% 
   as_tibble() %>% 
   dplyr::mutate(Date=ymd(Date),
-                PosPct=as.numeric(gsub("\\,",".",PosPct))) %>% 
+                PosPct=as.numeric(gsub("\\,",".",PosPct))/100) %>% 
   ggplot(.,aes(x=Date,y=PosPct)) +
   geom_point() +
+  theme_bw() +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x="Date",y="% Positive") +
-  scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),dmy("01-07-2021")),date_labels = "%Y-%b") +
-  scale_y_continuous(limits=c(0,10)) +
-  geom_smooth(span=0.1) +
-  scale_y_continuous(limits=c(0,5))
+  scale_x_date(date_breaks = "1 day",limits=c(Sys.Date()-months(1),Sys.Date()),date_labels = "%d-%b") +
+  scale_y_continuous(limits=c(0,0.01),labels = scales::percent,expand=c(0,0)) +
+  geom_smooth(span=0.1,color="black")
 
 ```
 
@@ -558,7 +587,9 @@ read.csv(paste0(temp_dir,"/Newly_admitted_over_time.csv"),sep=";") %>%
   ggplot(.,aes(x=Dato,y=Value,color=Metric,group=Metric)) +
   # geom_point() +
   geom_point() +
+  theme_bw() +
   geom_smooth(span=0.1) +
+  scale_y_continuous(limits=c(0,NA)) +
   scale_x_date(date_breaks = "1 months",limits=c(dmy("01-02-2020"),dmy("01-07-2021")),date_labels = "%b") +
   theme(legend.position="bottom")
 
@@ -574,6 +605,7 @@ read.csv(paste0(temp_dir,"/Newly_admitted_over_time.csv"),sep=";") %>%
   ggplot(.,aes(x=Dato,y=Value,color=Metric,group=Metric)) +
   geom_point() +
   geom_smooth() +
+  theme_bw() +
   scale_x_date(date_breaks = "1 week",date_labels = "%d-%b",limits = c(Sys.Date()-months(1),Sys.Date())) +
   scale_y_continuous(limits=c(0,50))+
   theme(legend.position = "bottom")
@@ -647,8 +679,10 @@ df.deaths = read.csv(paste0(temp_dir,"/Deaths_over_time.csv"),sep=";") %>%
 ggplot(df.deaths,aes(x=date,y=deaths)) +
   geom_point() +
   geom_smooth(span=0.1) +
+  theme_bw() +
   scale_y_continuous(limits=c(0,40)) +
-  scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),dmy("01-07-2021")),date_labels = "%b")
+  scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),dmy("01-07-2021")),date_labels = "%b") +
+  labs(x = "Date", y = "Number of Daily Deaths")
 
 ```
 
@@ -879,7 +913,7 @@ df.vaccinations = df %>%
 
 ## Cumulative completed
 
-```{r  }
+```{r echo=TRUE }
 
   df.vaccinations %>% 
   filter(Stat %in% c("N_Completed_Cumulative",
@@ -961,7 +995,7 @@ df.predicted[seq(length(y)),"y"] = y
 colnames(df.predicted) <- c("x","fit","lwr","upr","y","date")
 ```
     
-```{r  }
+```{r eval=F  }
 options(scipen=999)
 
 ggplot(df.predicted,aes(x=date,y=fit)) +
