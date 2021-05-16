@@ -1,5 +1,7 @@
 # Denmark Covid Incidence (SSI Data)
 
+[![dk-covid-render](https://github.com/ckrusemd/denmark-covid-incidence/actions/workflows/deploy_bookdown.yml/badge.svg)](https://github.com/ckrusemd/denmark-covid-incidence/actions/workflows/deploy_bookdown.yml)
+
 R Bookdown scripts to visualize and analyze Danish COVID-19 data from Statens Serum Institut.
 
 Docker environment in early phases that would allow it to be restarted daily and published.
