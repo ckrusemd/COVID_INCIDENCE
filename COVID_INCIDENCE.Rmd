@@ -2,21 +2,37 @@
 title: "Denmark Covid Incidence (SSI Data)"
 output:
   html_document:
-    df_print: paged
-knit: (function(inputFile, encoding) { 
-    rmarkdown::render(inputFile,
-                      encoding=encoding, 
-                      output_file=file.path('docs/index.html')) })
+#    df_print: paged
+#knit: (function(inputFile, encoding) { 
+#    rmarkdown::render(inputFile,
+#                      encoding=encoding, 
+#                      output_file=file.path('docs/index.html')) })
 ---
 
 ```{r include=FALSE }
 knitr::opts_chunk$set(echo=FALSE, results='hide', message=FALSE, warning=FALSE)
+
+pacman::p_load(openxlsx,tibbletime,tidyverse,lubridate,tidyr,dplyr,tibble,drc,Ryacas,rvest,drc,tabulizer,directlabels,scales)
+
+dtime = as.POSIXct(Sys.time(),tz="Europe/Copenhagen")
+timestamp = paste0(month(dtime, label = TRUE, abbr = FALSE)," ")
+timestamp = paste0(timestamp,scales::ordinal(day(dtime))," ")
+timestamp = paste0(timestamp,year(dtime)," ")
+timestamp = paste0(timestamp,hour(dtime),":")
+timestamp = paste0(timestamp,format(dtime, "%M")," ")
+timestamp = paste0(timestamp,"(",Sys.timezone(),")")
+
 ```
 
-This report was compiled `r Sys.time()`.
+A compilation of visualizations and analyses of Danish COVID-19 incidence numbers published daily by Statens Serum Institut (SSI).
+
+Calculations are performed daily at 14:00 CET in line with daily new data packages by SSI.
+
+Numbers from thee most recent two days are excluded, as they are often subject to several revisions.
+
+This report was compiled `r timestamp `.
 
 ```{r }
-pacman::p_load(openxlsx,tibbletime,tidyverse,lubridate,tidyr,dplyr,tibble,drc,Ryacas,rvest,drc,tabulizer,directlabels)
 
 current_url = xml2::read_html("https://covid19.ssi.dk/overvagningsdata/download-fil-med-overvaagningdata") %>%
   html_node("#top > div.main-content > section.rte.w-max.search-results.search-results-files.compact-half > accordions > div:nth-child(2) > div > div > ul > li:nth-child(1) > h5 > a") %>% 
@@ -34,7 +50,7 @@ unzip(zipfile = zip_path,exdir = temp_dir)
 
 The following files were downloaded:
 
-```{r echo=TRUE}
+```{r echo=TRUE, results= 'asis'}
 file.info(list.files(temp_dir))
 ```
 
@@ -84,6 +100,8 @@ df <- df %>%
 ```
 
 # 14 Day Incidence per 100,000 citizens
+
+Total Danish population (~5.82 million) incidence in the past 14 days per 100,000 citizens since the beginning of the COVID-19 pandemic. Includes exponential curves of 2nd wave and early 3rd wave in 2021.
 
 ```{r  }
 ## DESCENT #1
@@ -171,10 +189,22 @@ predicted.incidence.increase.3 <-
   tbl_df() %>%
   dplyr::mutate(Date=seq.Date(ymd("2021-02-16"),ymd("2021-07-01"),by = "1 day"))
 
-# Most recent 14 days
 
-df %>% tail(14) %>% knitr::kable()
+```
 
+```{r }
+
+recent_30_days = df %>% 
+  tail(30) 
+
+colnames(recent_30_days) = c("Date",
+                                        "Daily New Positive Cases",
+                                        "14 Day Cumulative Cases",
+                                        "14 Day Incidence Per 100K")
+
+```
+
+```{r  }
 # PLOT
 df %>%
   ggplot(.,aes(x=Date,y=INCIDENCE)) +
@@ -189,11 +219,11 @@ df %>%
   geom_line(data=predicted.incidence.increase,aes(x=Date,y=lwr),color="black") +
   geom_line(data=predicted.incidence.increase,aes(x=Date,y=upr),color="black") +
   
-  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=fit),color="green") +
+  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=fit),color="red") +
   geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=lwr),color="black") +
   geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=upr),color="black") +
   
-  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=fit),color="yellow") +
+  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=fit),color="green") +
   geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=lwr),color="black") +
   geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=upr),color="black") +
   
@@ -202,17 +232,17 @@ df %>%
   geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=upr),color="black") +
   
   geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-02-2020"),dmy("01-08-2030"),by="1 day"),"month")),color="gray70") +
-  geom_hline(yintercept = seq(100,1000,by=100)) + 
+  geom_hline(yintercept = seq(100,1000,by=100),color="gray70") + 
   
   scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),dmy("01-07-2021")),date_labels = "%Y %b") +
-  scale_y_continuous(limits=c(0,1000),breaks=seq(0,1000,by=50)) +
+  scale_y_continuous(limits=c(0,1000),breaks=seq(0,1000,by=50),expand=c(0,0)) +
   
   theme(axis.text.x = element_text(angle = 90)) +
   
   labs(x="Date",y="14-day Incidence Per 100,000")
 ```
 
-# Recent Developments (Spring 2021)
+# 2021 Developments
 
 ```{r }
 
@@ -235,7 +265,7 @@ df %>%
   geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=lwr),color="black") +
   geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=upr),color="black") +
   
-  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=fit),color="yellow") +
+  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=fit),color="green") +
   geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=lwr),color="black") +
   geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=upr),color="black") +
   
@@ -244,17 +274,25 @@ df %>%
   geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=upr),color="black") +
   
   geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-01-2021"),dmy("01-07-2021"),by="1 day"),"month")),color="gray70") +
-  geom_hline(yintercept = seq(0,500,by=100)) + 
+  geom_hline(yintercept = seq(0,500,by=100),color="gray70") + 
   
-  scale_x_date(date_breaks = "1 month",limits=c(dmy("01-01-2021"),dmy("01-07-2021")),date_labels = "%Y %b") +
-  scale_y_continuous(limits=c(0,500),breaks=seq(0,500,by=25)) +
+  scale_x_date(date_breaks = "14 days",limits=c(dmy("01-01-2021"),dmy("01-07-2021")),date_labels = "%Y %b") +
+  scale_y_continuous(limits=c(0,500),breaks=seq(0,500,by=25),expand=c(0,0)) +
   
+  theme_bw() + 
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x="Date",y="14-day Incidence Per 100,000") 
 
 ```
 
-# Last Month
+# Most recent 30 days
+
+```{r results="asis", echo = TRUE }
+
+recent_30_days %>% 
+  knitr::kable()
+
+```
 
 
 ```{r  }
@@ -265,7 +303,7 @@ df %>%
   ggplot(.,aes(x=Date,y=INCIDENCE)) +
   geom_point() +
   scale_x_date(date_breaks = "1 week",limits=c(Sys.Date()-months(1),Sys.Date()),date_labels = "%d %b") +
-  scale_y_continuous(limits=c(75,225),breaks=seq(75,225,by=25)) +
+  scale_y_continuous(limits=c(75,250),breaks=seq(75,500,by=25)) +
   geom_abline(slope = -1,intercept = 200) +
   
   geom_line(data=predicted.incidence.descent,aes(x=Date,y=fit),color="blue") +
@@ -288,7 +326,7 @@ df %>%
   geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=lwr),color="black") +
   geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=upr),color="black") +
   
-  geom_hline(yintercept = seq(0,1000,by=50)) + 
+  geom_hline(yintercept = seq(0,1000,by=50),color="gray70") + 
   
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x="Date",y="14-day Incidence Per 100,000") 
@@ -296,6 +334,8 @@ df %>%
 ```
 
 # 250 Incidence Risk
+
+Identifies municipalities with 7-day incidence numbers per 100,000 above or closing in on the 250 limit.
 
 ```{r}
 
@@ -331,7 +371,7 @@ df.250 <-
 
 ```
 
-```{r}
+```{r echo=TRUE,results='asis'}
 df.250 %>% 
   group_by(Muni) %>% 
   filter(SampleDate==max(SampleDate)) %>% 
@@ -354,8 +394,8 @@ p= df.250  %>%
   geom_line() +
   theme_bw()+
   theme(legend.position="null") +
-  geom_hline(yintercept = 250,color="red",size=1.1) +
-  geom_hline(yintercept = 200,color="yellow",size=1.1) +
+  geom_hline(yintercept = 250,color="red",size=0.8,alpha=0.7) +
+  geom_hline(yintercept = 200,color="yellow",size=0.8,alpha=0.7) +
   labs(x="Date",y="7-day Incidence Per 100,000") +
   scale_x_date(date_breaks = "2 days",date_labels = "%d %b",expand=c(0,3)) +
   scale_y_continuous(limits=c(0,500),breaks=seq(0,500,by=25))
@@ -365,7 +405,6 @@ direct.label(p,list("last.bumpup",cex=1))
 ```
 
 # Antigen Tests
-
 
 ```{r}
 
@@ -382,7 +421,8 @@ df.antigen_pcr <-
                 FP=AGposPCRneg,
                 FN=AGnegPCRpos,
                 TN=AGnegPCRneg) %>% 
-  dplyr::mutate(TP=as.integer(TP),
+  dplyr::mutate(AG_testede=as.integer(AG_testede),
+                TP=as.integer(TP),
                 FP=as.integer(FP),
                 FN=as.integer(FN),
                 TN=as.integer(TN),
@@ -397,19 +437,38 @@ df.antigen_pcr <-
 
 ```
 
+
+## Daily Tests over Time
+
+```{r}
+
+ggplot(df.antigen_pcr,aes(x=Dato,y=AG_testede)) +
+  geom_line() +
+  geom_point() +
+  labs(x="Date",y="Number of Tests") +
+  scale_y_continuous(labels=scales::comma,expand=c(0,0),breaks=seq(0,500000,by=25000)) +
+  scale_x_date(date_breaks = "14 days",date_labels = "%d %b %Y",expand=c(0,3)) +
+  theme_bw()
+
+```
+
 ## Confusion Matrix (last 7 days)
 
-```{r echo=TRUE}
+```{r echo=TRUE,results="asis"}
 
 library(epibasix)
 
-df.antigen_pcr %>% 
+df.antigen_pcr.cm = df.antigen_pcr %>% 
   tail(7) %>% 
   dplyr::mutate(TP=sum(TP),
                 FP=sum(FP),
                 FN=sum(FN),
                 TN=sum(TN)) %>% 
-  slice(c(1)) %>% 
+  dplyr::mutate(PPV=TP/(TP+FP),
+                NPV=TN/(FN+TN)) %>% 
+  slice(c(1)) 
+
+df.antigen_pcr.cm %>% 
   dplyr::select(TP:TN) %>% 
   as.integer %>% 
   matrix(ncol=2,nrow=2) %>% 
@@ -417,6 +476,12 @@ df.antigen_pcr %>%
   summary
   
 ```
+
+* Sensitivity = ```r scales::percent(df.antigen_pcr.cm$Sensitivity,0.1) ```
+* Specificity = ```r scales::percent(df.antigen_pcr.cm$Specificity,0.1) ```
+
+* Positive Predicted Value = ```r scales::percent(df.antigen_pcr.cm$PPV,0.1) ```
+* Negative Predicted Value = ```r scales::percent(df.antigen_pcr.cm$NPV,0.1) ```
 
 ## Compared to final PCR
 
@@ -478,8 +543,9 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   geom_point() +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x="Date",y="Number of Daily Tests") +
-  scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),dmy("01-07-2021")),date_labels = "%Y-%b") +
-    scale_y_continuous(limits=c(0,250000),breaks=seq(0,250000,by=25000)) +
+  scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),Sys.Date()+days(7)),date_labels = "%b") +
+    scale_y_continuous(limits=c(0,350000),breaks=seq(0,350000,by=25000),expand=c(0,0),labels=scales::comma) +
+  theme_bw() + 
   geom_smooth(span=0.1)
 
 ```
@@ -499,9 +565,10 @@ read.csv(paste0(temp_dir,"/Test_regioner.csv"),sep=";") %>%
   geom_point() +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x="Date",y="Number of Daily Tests") +
-  scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),dmy("01-07-2021")),date_labels = "%Y-%b") +
-    scale_y_continuous(limits=c(0,120000),breaks=seq(0,120000,by=10000)) +
+  scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),Sys.Date()+days(7)),date_labels = "%b") +
+  scale_y_continuous(limits=c(0,120000),breaks=seq(0,120000,by=10000),expand=c(0,0),labels=scales::comma) +
   geom_smooth(span=0.1) +
+  theme_bw() +
   theme(legend.position="bottom")
 
 
@@ -523,10 +590,11 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   ggplot(.,aes(x=Tested,y=PosPct)) +
   geom_point(aes(color=Month)) +
   geom_smooth(aes(color=Month)) +
-  theme(axis.text.x = element_text(angle = 90)) +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90),legend.position="bottom") +
   labs(x="Number of tests",y="Positive Percentage") +
   scale_y_continuous(limits=c(0,NA),breaks=seq(0,1,by=0.0025),labels = scales::percent,expand=c(0,0))+
-  scale_x_continuous(limits=c(0,NA),breaks=seq(0,250000,by=10000))
+  scale_x_continuous(limits=c(0,NA),breaks=seq(0,250000,by=10000),labels=scales::comma)
 
 
 
