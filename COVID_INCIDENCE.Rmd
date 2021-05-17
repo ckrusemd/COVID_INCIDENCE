@@ -51,7 +51,8 @@ unzip(zipfile = zip_path,exdir = temp_dir)
 The following files were downloaded:
 
 ```{r echo=TRUE, results= 'TRUE'}
-file.info(list.files(temp_dir))
+file.info(list.files(temp_dir)) %>% 
+  knitr::kable()
 ```
 
 ```{r}
@@ -288,14 +289,6 @@ df %>%
 
 # Most recent 30 days
 
-```{r results="asis", echo = TRUE }
-
-recent_30_days %>% 
-  knitr::kable()
-
-```
-
-
 ```{r  }
 
 
@@ -333,6 +326,15 @@ df %>%
   labs(x="Date",y="14-day Incidence Per 100,000") 
 
 ```
+
+```{r results="asis", echo = TRUE }
+
+recent_30_days %>% 
+  knitr::kable()
+
+```
+
+
 
 # 250 Incidence Risk
 
@@ -378,7 +380,8 @@ df.250 %>%
   filter(SampleDate==max(SampleDate)) %>% 
   dplyr::select(SampleDate,Muni,Befolkningstal,ROLLING_SUM,INCIDENCE) %>% 
   ungroup() %>% 
-  arrange(desc(INCIDENCE))
+  arrange(desc(INCIDENCE)) %>% 
+  knitr::kable()
 ```
 
 ```{r}
