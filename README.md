@@ -2,10 +2,11 @@
 
 [![dk-covid-render](https://github.com/ckrusemd/denmark-covid-incidence/actions/workflows/deploy_bookdown.yml/badge.svg)](https://github.com/ckrusemd/denmark-covid-incidence/actions/workflows/deploy_bookdown.yml)
 
-R Bookdown scripts to visualize and analyze Danish COVID-19 data from Statens Serum Institut.
+R-Markdown compiled to a Bookdown that visualizes and analyzes Danish COVID-19 data from Statens Serum Institut.
 
-Docker environment in early phases that would allow it to be restarted daily and published.
+Updates automatically everyday just after 14:00 CET.
 
+Several different analyses are available:
 * 14 day incidence per 100,000
 * Antigen/PCR sensitivity plots over time
 * Daily vaccination completion
