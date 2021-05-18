@@ -192,7 +192,8 @@ unzip(zipfile = zip_path,exdir = temp_dir)
 The following files were downloaded:
 
 ```{r echo=TRUE, results= 'TRUE'}
-file.info(list.files(temp_dir))
+file.info(list.files(temp_dir)) %>% 
+  knitr::kable()
 ```
 
 ```{r}
@@ -475,6 +476,15 @@ df %>%
 
 ```
 
+```{r results="asis", echo = TRUE }
+
+recent_30_days %>% 
+  knitr::kable()
+
+```
+
+
+
 # 250 Incidence Risk
 
 Identifies municipalities with 7-day incidence numbers per 100,000 above or closing in on the 250 limit.
@@ -520,7 +530,8 @@ df.250 %>%
   dplyr::mutate(INCIDENCE=round(INCIDENCE,0)) %>% 
   dplyr::select(SampleDate,Muni,Befolkningstal,ROLLING_SUM,INCIDENCE) %>% 
   ungroup() %>% 
-  arrange(desc(INCIDENCE))
+  arrange(desc(INCIDENCE)) %>% 
+  knitr::kable()
 ```
 
 ```{r}

@@ -3,3 +3,7 @@ Data/
 
 .Rhistory
 .Rproj.user
+
+.DS_Store
+_book/*
+_bookdown_files/*
