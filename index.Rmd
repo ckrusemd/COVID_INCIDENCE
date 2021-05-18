@@ -10,6 +10,10 @@ biblio-style: apalike
 link-citations: yes
 github-repo: ckrusemd/denmark-covid-incidence
 description: ""
+knit: (function(inputFile, encoding) { 
+    rmarkdown::render(inputFile,
+                      encoding=encoding, 
+                      output_file=file.path('index.html')) })
 ---
 
 # Denmark Covid Incidence (SSI Data)
