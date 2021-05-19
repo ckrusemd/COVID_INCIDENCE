@@ -183,6 +183,7 @@ current_url = xml2::read_html("https://covid19.ssi.dk/overvagningsdata/download-
 ```{r }
 ## Unzip
 temp_dir = tempdir()
+dir.create(paste0(temp_dir,"/COVID"))
 temp_dir = paste0(temp_dir,"/COVID")
 zip_path = paste0(temp_dir,"/temp.zip")
 download.file(current_url,zip_path, mode="wb")
@@ -192,8 +193,13 @@ unzip(zipfile = zip_path,exdir = temp_dir)
 The following files were downloaded:
 
 ```{r echo=TRUE, results= 'TRUE'}
-file.info(list.files(temp_dir)) %>% 
-  knitr::kable()
+file.info(list.files(temp_dir,full.names = TRUE)) %>% 
+  dplyr::select(-isdir,-mode,-uid,-gid,-uname,-grname) %>% 
+  dplyr::mutate(Filename=row.names(.)) %>% 
+  dplyr::mutate(Filename=gsub(temp_dir,"",Filename)) %>%
+  relocate(Filename) %>% 
+  setNames(.,c("Filename","File Size","Modified Date","Last status change","Last access times")) %>% 
+  knitr::kable(row.names = F)
 ```
 
 ```{r}
