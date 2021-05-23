@@ -14,9 +14,6 @@ knitr::opts_chunk$set(echo=FALSE, results='hide', message=FALSE, warning=FALSE)
 
 pacman::p_load(openxlsx,tibbletime,tidyverse,lubridate,tidyr,dplyr,tibble,drc,Ryacas,rvest,drc,tabulizer,directlabels,scales)
 
-tz = "Europe/Copenhagen"
-compile_time = as.POSIXct(Sys.time(),tz=tz)
-
 ```
 
 ```{r}
@@ -151,6 +148,15 @@ theme_coviddk <- theme(
 ```
 
 ```{r}
+print_danish_time = function() {
+  time = lubridate::with_tz(Sys.time(), "CET")
+  
+  paste0( strftime(time,format="%A %b")," ",scales::ordinal_format()(lubridate::day(time))," ",strftime(time,format="%Y %H:%M")," ",lubridate::tz(time))
+}
+
+```
+
+```{r}
 
 options(ggplot2.continuous.colour="viridis")
 options(ggplot2.continuous.fill = "viridis")
@@ -165,7 +171,7 @@ Calculations are performed daily at 14:00 CET in line with daily new data packag
 
 Numbers from thee most recent two days are excluded, as they are often subject to several revisions.
 
-This report was compiled `r compile_time `.
+This report was compiled `r print_danish_time `.
 
 ```{r }
 
@@ -579,6 +585,25 @@ direct.label(p,list("last.bumpup",cex=0.8))
 
 ```{r}
 
+calc_sens = function(TP,FN) {
+  return (TP/(TP+FN))
+}
+
+calc_spec = function(TN,FP) {
+  return (TN/(FP+TN))
+}
+
+calc_ppv = function(TP,FP) {
+  return (TP/(TP+FP))
+}
+
+calc_npv = function(TN,FN) {
+  return (TN/(FN+TN))
+}
+```
+
+```{r}
+
 col_number = ncol(read.csv(paste0(temp_dir,"/Antigentests_pr_dag.csv"),
            sep = ";"))
 
@@ -593,6 +618,7 @@ df.antigen_pcr <-
                 FN=AGnegPCRpos,
                 TN=AGnegPCRneg) %>% 
   dplyr::mutate(AG_testede=as.integer(AG_testede),
+                AG_pos=as.integer(AG_pos),
                 TP=as.integer(TP),
                 FP=as.integer(FP),
                 FN=as.integer(FN),
@@ -603,8 +629,10 @@ df.antigen_pcr <-
                   FN_frac=FN/Total,
                   TN_frac=TN/Total) %>% 
   dplyr::mutate(Dato=ymd(Dato)) %>% 
-  dplyr::mutate(Sensitivity=TP/(TP+FN),
-                Specificity=TN/(TN+FP))
+  dplyr::mutate(Sensitivity=calc_sens(TP,FN),
+                Specificity=calc_spec(TN,FP)) %>% 
+  dplyr::mutate(PPV=calc_ppv(TP,FP),
+                NPV=calc_npv(TN,FN)) 
 
 ```
 
@@ -617,7 +645,7 @@ ggplot(df.antigen_pcr,aes(x=Dato,y=AG_testede)) +
   # geom_line() +
   geom_col() +
   labs(x="Date",y="Number of Tests") +
-  scale_y_continuous(labels=scales::comma,expand=c(0,0),breaks=seq(0,5000000,by=25000),limits=c(0,NA)) +
+  scale_y_continuous(labels=scales::comma,expand=c(0,0),breaks=seq(0,10000000,by=25000),limits=c(0,NA)) +
   scale_x_date(date_breaks = "14 days",date_labels = "%d %b %Y",expand=c(0,3)) +
   theme_coviddk 
 
@@ -625,26 +653,37 @@ ggplot(df.antigen_pcr,aes(x=Dato,y=AG_testede)) +
 
 ## Confusion Matrix (last 7 days)
 
+
 ```{r echo=FALSE,results="TRUE"}
 
 df.antigen_pcr.cm = df.antigen_pcr %>% 
   tail(7) %>% 
-  dplyr::mutate(TP=sum(TP),
+  dplyr::mutate(AG_pos=sum(AG_pos),
+                TP=sum(TP),
                 FP=sum(FP),
                 FN=sum(FN),
-                TN=sum(TN)) %>% 
-  dplyr::mutate(PPV=TP/(TP+FP),
-                NPV=TN/(FN+TN)) %>% 
-  slice(c(1)) 
+                TN=sum(TN),
+                Total=(TP+FP+FN+TN)) %>% 
+  slice(c(1)) %>% 
+    dplyr::mutate(TP_frac=TP/Total,
+                  FP_frac=FP/Total,
+                  FN_frac=FN/Total,
+                  TN_frac=TN/Total) %>% 
+  dplyr::mutate(Sensitivity=calc_sens(TP,FN),
+                Specificity=calc_spec(TN,FP)) %>% 
+  dplyr::mutate(PPV=calc_ppv(TP,FP),
+                NPV=calc_npv(TN,FN)) 
 
 df.confusion_matrix = df.antigen_pcr.cm %>% 
   dplyr::select(TP:TN) %>% 
   as.integer %>% 
   matrix(ncol=2,nrow=2) %>% 
+  t %>% 
   as.data.frame
 
-colnames(df.confusion_matrix) <- c("Predicted Positive","Predicted Negative")
-row.names(df.confusion_matrix) <- c("Observed Positive","Observed Negative")
+row.names(df.confusion_matrix) <- c("Predicted Positive","Predicted Negative")
+colnames(df.confusion_matrix) <- c("Observed Positive","Observed Negative")
+
   df.confusion_matrix %>% 
     knitr::kable()
 
@@ -667,6 +706,7 @@ df.antigen_pcr %>%
   geom_bar(stat="identity") +
   scale_x_date(date_breaks = "14 days",date_labels = "%b %d",expand=c(0,0)) +
   scale_y_continuous(labels = scales::percent,expand=c(0,0),breaks=seq(0,1,by=0.05)) +
+  scale_fill_discrete(labels = c("False Negative (%)", "False Positive (%)", "True Negative (%)","True Positive (%)")) +
   theme_bw()  +
   labs(x="Date",y="Fraction") +
   theme(legend.position="bottom")
@@ -682,6 +722,7 @@ df.antigen_pcr %>%
   geom_line() +
   scale_x_date(date_breaks = "7 days",date_labels = "%b %d",expand=c(0,0)) +
   scale_y_continuous(labels = scales::percent,expand=c(0,0),breaks=seq(0,1,by=0.01),limits=c(0,0.05)) +
+  scale_color_discrete(labels = c("False Negative (%)", "False Positive (%)","True Positive (%)")) +
   theme_coviddk +
   labs(x="Date",y="Fraction") 
 ```
