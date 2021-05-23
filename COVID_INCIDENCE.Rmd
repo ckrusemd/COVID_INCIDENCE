@@ -171,7 +171,7 @@ Calculations are performed daily at 14:00 CET in line with daily new data packag
 
 Numbers from thee most recent two days are excluded, as they are often subject to several revisions.
 
-This report was compiled `r print_danish_time `.
+This report was compiled `r print_danish_time() `.
 
 ```{r }
 
