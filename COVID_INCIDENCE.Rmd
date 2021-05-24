@@ -157,6 +157,12 @@ print_danish_time = function() {
 ```
 
 ```{r}
+timestamp_caption = function() {
+  return(paste0("Figure generated ",print_danish_time()," (github.com/ckrusemd/denmark-covid-incidence)"))
+}
+```
+
+```{r}
 
 options(ggplot2.continuous.colour="viridis")
 options(ggplot2.continuous.fill = "viridis")
@@ -388,7 +394,8 @@ df %>%
   
   theme_coviddk +
   
-  labs(x="Date",y="14-day Incidence Per 100,000")
+  labs(x="Date",y="14-day Incidence Per 100,000",
+       caption = timestamp_caption())
 ```
 
 # 2021 Developments
@@ -430,7 +437,8 @@ df %>%
   
   
   theme_coviddk +
-  labs(x="Date",y="14-day Incidence Per 100,000") 
+  labs(x="Date",y="14-day Incidence Per 100,000",
+       caption = timestamp_caption()) 
 
 ```
 
@@ -482,7 +490,8 @@ df %>%
   
   
   theme_coviddk +
-  labs(x="Date",y="14-day Incidence Per 100,000") 
+  labs(x="Date",y="14-day Incidence Per 100,000",
+       caption = timestamp_caption()) 
 
 ```
 
@@ -551,7 +560,8 @@ p= df.250  %>%
   theme_coviddk +
   geom_hline(yintercept = 250,color="red",size=0.8,alpha=0.7) +
   geom_hline(yintercept = 200,color="yellow",size=0.8,alpha=0.7) +
-  labs(x="Date",y="7-day Incidence Per 100,000") +
+  labs(x="Date",y="7-day Incidence Per 100,000",
+       caption = timestamp_caption()) +
   scale_x_date(date_breaks = "2 days",date_labels = "%A %d %b",expand=c(0,3)) +
   scale_y_continuous(limits=c(0,500),breaks=seq(0,500,by=25))
 
@@ -574,7 +584,8 @@ p= df.250  %>%
   theme_coviddk +
   geom_hline(yintercept = 250,color="red",size=0.8,alpha=0.7) +
   geom_hline(yintercept = 200,color="yellow",size=0.8,alpha=0.7) +
-  labs(x="Date",y="7-day Incidence Per 100,000") +
+  labs(x="Date",y="7-day Incidence Per 100,000",
+       caption = timestamp_caption()) +
   scale_x_date(date_breaks = "2 days",date_labels = "%A %d %b",expand=c(0,3)) +
   scale_y_continuous(limits=c(NA,NA),breaks=seq(0,500,by=25))
 
@@ -644,7 +655,8 @@ df.antigen_pcr <-
 ggplot(df.antigen_pcr,aes(x=Dato,y=AG_testede)) +
   # geom_line() +
   geom_col() +
-  labs(x="Date",y="Number of Tests") +
+  labs(x="Date",y="Number of Tests",
+       caption = timestamp_caption()) +
   scale_y_continuous(labels=scales::comma,expand=c(0,0),breaks=seq(0,10000000,by=25000),limits=c(0,NA)) +
   scale_x_date(date_breaks = "14 days",date_labels = "%d %b %Y",expand=c(0,3)) +
   theme_coviddk 
@@ -708,7 +720,8 @@ df.antigen_pcr %>%
   scale_y_continuous(labels = scales::percent,expand=c(0,0),breaks=seq(0,1,by=0.05)) +
   scale_fill_discrete(labels = c("False Negative (%)", "False Positive (%)", "True Negative (%)","True Positive (%)")) +
   theme_bw()  +
-  labs(x="Date",y="Fraction") +
+  labs(x="Date",y="Fraction",
+       caption = timestamp_caption()) +
   theme(legend.position="bottom")
 
 ```
@@ -724,7 +737,8 @@ df.antigen_pcr %>%
   scale_y_continuous(labels = scales::percent,expand=c(0,0),breaks=seq(0,1,by=0.01),limits=c(0,0.05)) +
   scale_color_discrete(labels = c("False Negative (%)", "False Positive (%)","True Positive (%)")) +
   theme_coviddk +
-  labs(x="Date",y="Fraction") 
+  labs(x="Date",y="Fraction",
+       caption = timestamp_caption()) 
 ```
 
 ```{r}
@@ -736,7 +750,8 @@ df.antigen_pcr %>%
   geom_line() +
   scale_x_date(date_breaks = "14 days",date_labels = "%b %d",expand=c(0,0)) +
   scale_y_continuous(limits=c(0,1),labels = scales::percent,expand=c(0,0),breaks=seq(0,1,by=0.05)) +
-  labs(x="Date",y="%")+
+  labs(x="Date",y="%",
+       caption = timestamp_caption())+
   theme_coviddk
 ```
 
@@ -753,7 +768,8 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
                 Tested=as.integer(gsub("\\.","",Tested))) %>% 
   ggplot(.,aes(x=Date,y=Tested)) +
   geom_col() +
-  labs(x="Date",y="Number of Daily PCR Tests") +
+  labs(x="Date",y="Number of Daily PCR Tests",
+       caption = timestamp_caption()) +
   scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),Sys.Date()+days(7)),date_labels = "%b") +
     scale_y_continuous(limits=c(0,350000),breaks=seq(0,350000,by=25000),expand=c(0,0),labels=scales::comma) +
   theme_coviddk +
@@ -774,7 +790,8 @@ read.csv(paste0(temp_dir,"/Test_regioner.csv"),sep=";") %>%
   gather(Region,Tested,c(2:6)) %>% 
   ggplot(.,aes(x=Date,y=Tested,color=Region)) +
   geom_point() +
-  labs(x="Date",y="Number of Daily Tests") +
+  labs(x="Date",y="Number of Daily Tests",
+       caption = timestamp_caption()) +
   scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),Sys.Date()+days(7)),date_labels = "%b") +
   scale_y_continuous(limits=c(0,120000),breaks=seq(0,120000,by=10000),expand=c(0,0),labels=scales::comma) +
   geom_smooth(span=0.1) +
@@ -800,7 +817,8 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   geom_point(aes(color=Month)) +
   geom_smooth(aes(color=Month)) +
   theme_coviddk +
-  labs(x="Number of tests",y="Positive Percentage") +
+  labs(x="Number of tests",y="Positive Percentage",
+       caption = timestamp_caption()) +
   scale_y_continuous(limits=c(0,NA),breaks=seq(0,1,by=0.0025),labels = scales::percent,expand=c(0,0))+
   scale_x_continuous(limits=c(0,NA),breaks=seq(0,250000,by=10000),labels=scales::comma)
 
@@ -822,7 +840,8 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   ggplot(.,aes(x=Date,y=PosPct)) +
   geom_line() +
   theme_coviddk +
-  labs(x="Date",y="% Positive") +
+  labs(x="Date",y="% Positive",
+       caption = timestamp_caption()) +
   scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),dmy("01-07-2021")),date_labels = "%Y %b") +
   scale_y_continuous(limits=c(0,NA),labels = scales::percent,expand=c(0,0)) +
   geom_smooth(span=0.2) 
@@ -841,7 +860,8 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   ggplot(.,aes(x=Date,y=PosPct)) +
   geom_point() +
   theme_coviddk +
-  labs(x="Date",y="% Positive") +
+  labs(x="Date",y="% Positive",
+       caption = timestamp_caption()) +
   scale_x_date(date_breaks = "2 day",limits=c(Sys.Date()-months(1),Sys.Date()),date_labels = "%A %d %b") +
   scale_y_continuous(limits=c(0,0.01),labels = scales::percent_format(accuracy = 0.1),expand=c(0,0),breaks = seq(0,1,by=0.001)) +
   geom_text(aes(label=scales::percent(x = PosPct,accuracy = 0.1)),angle=45,vjust=-0.1,hjust=-0.1)
@@ -866,7 +886,8 @@ read.csv(paste0(temp_dir,"/Newly_admitted_over_time.csv"),sep=";") %>%
   theme(legend.position="null") +
   geom_smooth(span=0.1,color="black") +
   scale_y_continuous(limits=c(0,NA)) +
-  scale_x_date(date_breaks = "1 months",limits=c(dmy("01-02-2020"),dmy("01-07-2021")),date_labels = "%b")
+  scale_x_date(date_breaks = "1 months",limits=c(dmy("01-02-2020"),dmy("01-07-2021")),date_labels = "%b") +
+  labs(caption = timestamp_caption())
 
 ```
 
@@ -885,7 +906,8 @@ read.csv(paste0(temp_dir,"/Newly_admitted_over_time.csv"),sep=";") %>%
   geom_smooth(span=0.1,color="black") +
   theme_coviddk +
   theme(legend.position="null") +
-  scale_x_date(date_breaks = "1 week",date_labels = "%d-%b",limits = c(Sys.Date()-months(1),Sys.Date()))
+  scale_x_date(date_breaks = "1 week",date_labels = "%d-%b",limits = c(Sys.Date()-months(1),Sys.Date())) +
+  labs(caption = timestamp_caption())
 
 ```
 
@@ -960,7 +982,8 @@ ggplot(df.deaths,aes(x=date,y=deaths)) +
   theme_coviddk +
   scale_y_continuous(limits=c(0,40),expand=c(0,0)) +
   scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),dmy("01-07-2021")),date_labels = "%b %Y") +
-  labs(x = "Date", y = "Number of Daily Deaths")
+  labs(x = "Date", y = "Number of Daily Deaths",
+       caption = timestamp_caption())
 
 ```
 
@@ -973,7 +996,8 @@ ggplot(df.deaths,aes(x=date,y=deaths)) +
   theme_coviddk +
   scale_y_continuous(limits=c(0,NA),expand=c(0,0)) +
   scale_x_date(date_breaks = "1 day",limits=c(max(df.deaths$date)-months(1),max(df.deaths$date)),date_labels = "%d %b") +
-  labs(x = "Date", y = "Number of Daily Deaths")
+  labs(x = "Date", y = "Number of Daily Deaths",
+       caption = timestamp_caption())
 
 ```
 
@@ -1035,7 +1059,8 @@ df.tests %>%
   scale_y_continuous(expand=c(0,0),limits=c(0,100),breaks=seq(0,100,by=5)) +
   scale_x_date(date_labels = "%b %Y",date_breaks = "1 month")+
   theme_coviddk +
-  labs(y="Index (0-100)")
+  labs(y="Index (0-100)",
+       caption = timestamp_caption())
 
 ```
 
@@ -1062,7 +1087,9 @@ df =
   theme_coviddk +
   geom_hline(yintercept = 1,color="red") +
   scale_y_continuous(limits = c(0,1.4),breaks = seq(0,1.4,by=0.1))+
-  scale_x_date(date_labels = "%b %Y",date_breaks = "1 month")
+  scale_x_date(date_labels = "%b %Y",date_breaks = "1 month") +
+  labs(x="Date",y="Rt",
+       caption = timestamp_caption())
 
 ```
 
@@ -1220,6 +1247,8 @@ df.vaccinations = df %>%
                      "Pct_Completed_Cumulative")) %>% 
   spread(Stat,Val) %>% 
   tail(14) %>% 
+  arrange(desc(Vaccination_Date)) %>% 
+  setNames(.,c("Date","Cumulative Number of Completed","Cumulative Percent Completed"))
   knitr::kable()
 
 ```
@@ -1239,8 +1268,9 @@ ggplot(
   scale_x_date(date_breaks = "1 month",date_labels = "%Y-%b") +
   theme_coviddk +
   scale_x_date(date_labels = "%d %b",date_breaks = "14 days")+
-  scale_y_continuous(limits=c(0,NA),breaks = seq(0,5800000,by=100000),labels = scales::unit_format(unit = "K",scale = 1e-3,big.mark = ",")) +
-  labs(x="Date",y="Cumulative Completed Vaccination")
+  scale_y_continuous(limits=c(0,NA),breaks = seq(0,5800000,by=100000),labels = scales::unit_format(accuracy = 0.1,unit = "M",scale = 1e-6,big.mark = ",")) +
+  labs(x="Date",y="Cumulative Completed Vaccination",
+       caption = timestamp_caption())
 ```
 
 ## Daily shots
@@ -1255,7 +1285,8 @@ ggplot(df.vaccinations %>%
   scale_x_date(date_breaks = "1 month",date_labels = "%Y-%b") +
   theme_coviddk +
   scale_y_continuous(limits=c(0,NA),breaks = seq(0,5800000,by=5000),labels = scales::unit_format(unit = "K",scale = 1e-3,big.mark = ","))+
-  labs(x="Date",y="Daily Completed Vaccination")
+  labs(x="Date",y="Daily Completed Vaccination",
+       caption = timestamp_caption())
 
 ```
 
@@ -1331,7 +1362,9 @@ ggplot(df.predicted,aes(x=date,y=fit)) +
   geom_text(mapping = aes(x = Date,
                           y = 1000000,
                           label = Group),
-            data = df_calendar,size=4,angle=-45,hjust=-0.1)
+            data = df_calendar,size=4,angle=-45,hjust=-0.1) +
+  labs(x="Date",y="Cumulative Number of Completed",
+       caption = timestamp_caption())
 
 
 ```
