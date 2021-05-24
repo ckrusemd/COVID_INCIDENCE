@@ -3,10 +3,10 @@ title: "Denmark Covid Incidence (SSI Data)"
 output:
   html_document:
     df_print: paged
-knit: (function(inputFile, encoding) { 
-    rmarkdown::render(inputFile,
-                      encoding=encoding, 
-                      output_file=file.path('docs/index.html')) })
+#knit: (function(inputFile, encoding) { 
+#    rmarkdown::render(inputFile,
+#                      encoding=encoding, 
+#                      output_file=file.path('docs/index.html')) })
 ---
 
 ```{r include=FALSE }
@@ -1248,7 +1248,7 @@ df.vaccinations = df %>%
   spread(Stat,Val) %>% 
   tail(14) %>% 
   arrange(desc(Vaccination_Date)) %>% 
-  setNames(.,c("Date","Cumulative Number of Completed","Cumulative Percent Completed"))
+  setNames(.,c("Date","Cumulative Number of Completed","Cumulative Percent Completed")) %>% 
   knitr::kable()
 
 ```
