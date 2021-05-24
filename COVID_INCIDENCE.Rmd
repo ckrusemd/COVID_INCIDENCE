@@ -151,8 +151,9 @@ theme_coviddk <- theme(
 print_danish_time = function() {
   time = lubridate::with_tz(Sys.time(), "CET")
   
-  paste0( strftime(time,format="%A %b")," ",scales::ordinal_format()(lubridate::day(time))," ",strftime(time,format="%Y %H:%M")," ",lubridate::tz(time))
+  paste0( strftime(time,tz="CET",format="%A %b")," ",scales::ordinal_format()(lubridate::day(time))," ",strftime(time,tz="CET",format="%Y %H:%M")," ",lubridate::tz(time))
 }
+
 
 ```
 
