@@ -399,7 +399,7 @@ df %>%
        caption = timestamp_caption())
 ```
 
-# 2021 Developments
+## 2021 Developments
 
 ```{r }
 
@@ -443,7 +443,7 @@ df %>%
 
 ```
 
-# Most recent 30 days
+## Most recent 30 days
 
 ```{r results="asis", echo = FALSE }
 
@@ -497,7 +497,7 @@ df %>%
 ```
 
 
-# 250 Incidence Risk
+## 250 Incidence Risk
 
 Identifies municipalities with 7-day incidence numbers per 100,000 above or closing in on the 250 limit.
 
@@ -820,6 +820,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   geom_smooth(span=0.1)
 
 ```
+
 ## Number of Daily PCR Tests
 
 ```{r  }
@@ -1003,7 +1004,7 @@ ggplot(df.deaths,aes(x=date,y=deaths)) +
 
 ```
 
-# Daily Deaths: Recent Month
+## Daily Deaths: Recent Month
 
 ```{r}
 
@@ -1307,7 +1308,7 @@ ggplot(df.vaccinations %>%
 
 ```
 
-## Forecast
+## Vaccination Completion Forecast (w/ Vaccination Calendar)
 
 ```{r include=TRUE, results="hide" }
 # fitting code
@@ -1343,8 +1344,6 @@ df.predicted =
 df.predicted[seq(length(y)),"y"] = y
 colnames(df.predicted) <- c("x","fit","lwr","upr","y","date")
 ```
-    
-# Completion Forecast (w/ Vaccination Calendar)
 
 Currently using the ```G.3``` model while we're awaiting Israel's and the UK's sigmoid course.
 
@@ -1437,6 +1436,7 @@ df %>%
   scale_fill_gradient(low="white",high="green")
 
 ```
+
 ## Weekly 'Målgruppe' Coverage Progression
 
 ```{r eval=F,fig.width=4,fig.height=8}
