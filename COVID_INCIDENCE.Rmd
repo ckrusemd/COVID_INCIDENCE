@@ -1391,7 +1391,7 @@ ggplot(df.predicted,aes(x=date,y=fit)) +
 
 ## 'Målgruppe' coverage
 
-```{r}
+```{r eval=F}
 
 num_cols = ncol(read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Maalgrp_Vacc_daekning_Region.csv"),
            header=FALSE,
@@ -1439,7 +1439,7 @@ df %>%
 ```
 ## Weekly 'Målgruppe' Coverage Progression
 
-```{r fig.width=4,fig.height=8}
+```{r eval=F,fig.width=4,fig.height=8}
 
 
 num_cols = ncol(read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Vaccinerede_pr_uge_pr_maalgruppe.csv"),
