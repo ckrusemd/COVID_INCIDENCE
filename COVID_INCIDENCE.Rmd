@@ -1403,8 +1403,9 @@ columnname = read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Maalgrp_Vacc_daek
   as.character %>% 
   paste0() %>% 
   gsub("\xe6","æ",.) %>% 
-  gsub("\xe5","å",.) %>% 
-  gsub("\U3e38663c","ø",.)
+  gsub("\xe5","å",.)
+#%>% 
+ # gsub("\U3e38663c","ø",.)
 columnnum <- which(grepl("Færdig|Bopælsregion",columnname))
 
 df <-
