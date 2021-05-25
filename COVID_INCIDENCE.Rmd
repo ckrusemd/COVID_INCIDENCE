@@ -3,16 +3,16 @@ title: "Denmark Covid Incidence (SSI Data)"
 output:
   html_document:
     df_print: paged
-#knit: (function(inputFile, encoding) { 
-#    rmarkdown::render(inputFile,
-#                      encoding=encoding, 
-#                      output_file=file.path('docs/index.html')) })
+knit: (function(inputFile, encoding) { 
+    rmarkdown::render(inputFile,
+                      encoding=encoding, 
+                      output_file=file.path('docs/index.html')) })
 ---
 
 ```{r include=FALSE }
 knitr::opts_chunk$set(echo=FALSE, results='hide', message=FALSE, warning=FALSE)
 
-pacman::p_load(openxlsx,tibbletime,tidyverse,lubridate,tidyr,dplyr,tibble,drc,Ryacas,rvest,drc,tabulizer,directlabels,scales)
+pacman::p_load(openxlsx,tibbletime,tidyverse,lubridate,tidyr,dplyr,tibble,drc,Ryacas,rvest,drc,tabulizer,directlabels,scales,ISOweek)
 
 ```
 
@@ -1388,6 +1388,7 @@ ggplot(df.predicted,aes(x=date,y=fit)) +
 
 
 ```
+
 ## 'Målgruppe' coverage
 
 ```{r}
@@ -1430,7 +1431,77 @@ df %>%
   ggplot(.,aes(x=Region,y=stat)) +
   geom_tile(aes(fill=value)) +
   theme_coviddk +
-  labs(y=NULL,x=NULL,caption=timestamp_caption())
+  theme(legend.position="null") +
+  labs(y=NULL,x=NULL,caption=timestamp_caption(),title="'Målgruppe' vaccination coverage") +
+  geom_text(aes(label=scales::percent(value,accuracy = 3))) +
+  scale_fill_gradient(low="white",high="green")
+
+```
+## Weekly 'Målgruppe' Coverage Progression
+
+```{r fig.width=4,fig.height=8}
+
+
+num_cols = ncol(read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Vaccinerede_pr_uge_pr_maalgruppe.csv"),
+           header=FALSE,
+           sep = ","))
+
+columnname = read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Vaccinerede_pr_uge_pr_maalgruppe.csv"),
+           header=FALSE,
+           sep = ",")[1,] %>% 
+  # t %>% 
+  as.character %>% 
+  paste0() %>% 
+  gsub("\xe6","æ",.) %>% 
+  gsub("\xe5","å",.) %>% 
+  gsub("\U3e38663c","ø",.)
+
+
+df <-
+  read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Vaccinerede_pr_uge_pr_maalgruppe.csv"),
+           skip=1,
+           header=FALSE,
+           sep = ",",
+           colClasses=rep('character',num_cols)) %>%
+  as_tibble() %>% 
+  dplyr::mutate(V1=paste0(V1,"-1")) %>%
+  # dplyr::mutate(V1=gsub("W","",V1)) %>% 
+  dplyr::mutate(V1=ISOweek::ISOweek2date(V1)) %>% 
+  setNames(.,columnname) %>% 
+  gather(stat,value,`Dækning førstegangsvaccinerede (kumulativt i %)`:`Dækning færdigvaccinerede (kumulativt i %)`)
+
+order = c("1. Plejehjemsbeboere",
+          "2. Borgere > 65, praktisk hjælp og personlig pleje",
+          "3. Borgere fra årgang 1936 og derunder (85 år og ældre)",
+          "4. Personale i sundhedsvæsenet og dele af socialvæsenet",
+          "5. Udvalgte patienter med særligt øget risiko",
+          "6. Udvalgte pårørende til personer med særligt øget risiko",
+          "7. Personer fra årgang 1937-1941",
+          "8. Personer fra årgang 1942-1946",
+          "9. Personer fra årgang 1947-1956",
+          "10A. Personer fra årgang 1957-1961",
+          "10B. Personer fra årgang 1962-1966",
+          "10C. Personer fra årgang 1967-1971",
+          "Resterende")
+
+df %>%
+  dplyr::mutate(Målgruppe=gsub("\xe6","æ",Målgruppe)) %>% 
+  dplyr::mutate(Målgruppe=gsub("\xe5","å",Målgruppe)) %>% 
+  dplyr::mutate(Målgruppe=gsub("\U3e38663c","ø",Målgruppe)) %>% 
+  dplyr::mutate(Målgruppe=factor(Målgruppe,levels=order)) %>%
+  dplyr::mutate(value=as.numeric(value)/100) %>% 
+  ggplot(.,aes(x=Ugenummer,y=value)) +
+  geom_line(aes(color=stat)) +
+  facet_wrap(~Målgruppe,ncol=1) +
+  theme_coviddk +
+  theme(legend.position="null") +
+  labs(y=NULL,x=NULL,caption=timestamp_caption(),title="'Målgruppe' vaccination coverage") +
+  # geom_text(aes(label=scales::percent(value,accuracy = 3))) +
+  scale_y_continuous(labels=scales::percent) +
+  scale_x_date(date_labels = "W%U %Y",date_breaks = "1 week") +
+  geom_vline(xintercept = seq.Date(dmy("01-01-2020"),dmy("01-01-2020")+years(5),by = "1 month"))
+
+
 
 ```
 
