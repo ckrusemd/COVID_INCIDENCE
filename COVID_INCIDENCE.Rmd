@@ -1314,7 +1314,8 @@ ggplot(df.vaccinations %>%
 # fitting code
 
 min_date=min(df.vaccinations$Vaccination_Date)
-max_date=max(df.vaccinations$Vaccination_Date)
+#max_date=max(df.vaccinations$Vaccination_Date)
+max_date=min_date+days(365)
 
 df_dates = data.frame(Vaccination_Date=seq.Date(min_date,max_date,by="1 day")) %>% 
   dplyr::mutate(day_num=row_number())
@@ -1336,13 +1337,13 @@ fit.sigmoid <- drm(y ~ x, data = df, fct = G.3())
 summary(fit.sigmoid)
 
 df.predicted = 
-  data.frame(x=seq(0,365,1),
-             y_=predict(fit.sigmoid,data.frame(x=seq(0,365,1)),interval = "prediction")) %>% 
-  dplyr::mutate(y=NA) %>% 
-  dplyr::mutate(Date=seq.Date(dmy("27-12-2020"),dmy("27-12-2020")+days(365),by = "1 day")) %>% 
-  filter(y_.Prediction<=5900000)
-df.predicted[seq(length(y)),"y"] = y
-colnames(df.predicted) <- c("x","fit","lwr","upr","y","date")
+  data.frame(x=seq(1,365,1),
+             predict(fit.sigmoid,data.frame(x=seq(1,365,1)),interval = "prediction")) %>% 
+    left_join(df_dates,by=c("x"="day_num")) %>% 
+    rename(Date=Vaccination_Date) %>% 
+    left_join(df.asymp,by=c("x"="day_num")) %>% 
+  filter(Prediction<=5900000)
+colnames(df.predicted) <- c("x","fit","lwr","upr","date","vacc_date","y")
 ```
 
 Currently using the ```G.3``` model while we're awaiting Israel's and the UK's sigmoid course.
