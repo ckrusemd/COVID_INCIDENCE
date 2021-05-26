@@ -1439,7 +1439,7 @@ df %>%
 
 ## Weekly 'Målgruppe' Coverage Progression
 
-```{r eval=F,fig.width=4,fig.height=8}
+```{r fig.width=4,fig.height=8}
 
 
 num_cols = ncol(read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Vaccinerede_pr_uge_pr_maalgruppe.csv"),
@@ -1453,8 +1453,8 @@ columnname = read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Vaccinerede_pr_ug
   as.character %>% 
   paste0() %>% 
   gsub("\xe6","æ",.) %>% 
-  gsub("\xe5","å",.) %>% 
-  gsub("\U3e38663c","ø",.)
+  gsub("\xe5","å",.) %>%
+  gsub("\xf8","ø",.)
 
 
 df <-
