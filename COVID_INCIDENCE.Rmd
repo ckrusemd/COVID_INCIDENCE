@@ -183,7 +183,7 @@ This report was compiled `r print_danish_time() `.
 ```{r }
 
 current_url = xml2::read_html("https://covid19.ssi.dk/overvagningsdata/download-fil-med-overvaagningdata") %>%
-  html_node("#top > div.main-content > section.rte.w-max.search-results.search-results-files.compact-half > accordions > div:nth-child(2) > div > div > ul > li:nth-child(1) > h5 > a") %>% 
+  html_node("#top > div.main-content > section.rte.w-max.search-results.search-results-files.compact-top > accordions > div:nth-child(2) > div > div > ul > li:nth-child(1) > h5 > a") %>% 
   rvest::html_attr("href")
 ```
 
