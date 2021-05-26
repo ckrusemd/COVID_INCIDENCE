@@ -1487,7 +1487,7 @@ order = c("1. Plejehjemsbeboere",
 df %>%
   dplyr::mutate(Målgruppe=gsub("\xe6","æ",Målgruppe)) %>% 
   dplyr::mutate(Målgruppe=gsub("\xe5","å",Målgruppe)) %>% 
-  dplyr::mutate(Målgruppe=gsub("\U3e38663c","ø",Målgruppe)) %>% 
+  dplyr::mutate(Målgruppe=gsub("\xf8","ø",Målgruppe)) %>% 
   dplyr::mutate(Målgruppe=factor(Målgruppe,levels=order)) %>%
   dplyr::mutate(value=as.numeric(value)/100) %>% 
   ggplot(.,aes(x=Ugenummer,y=value)) +
