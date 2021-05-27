@@ -598,11 +598,11 @@ direct.label(p,list("last.bumpup",cex=0.8))
 
 
 # Time series
-col_number = ncol(read.csv(paste0(temp_dir,"/COVID/Cases_by_age.csv"),
+col_number = ncol(read.csv(paste0(temp_dir,"/Cases_by_age.csv"),
            sep = ";"))
 
 # df.250 <-
-  read.csv(paste0(temp_dir,"/COVID/Cases_by_age.csv"),
+  read.csv(paste0(temp_dir,"/Cases_by_age.csv"),
            sep = ";",
            encoding = "UTF-8",
            colClasses=rep("character",col_number)) %>%
@@ -626,10 +626,10 @@ col_number = ncol(read.csv(paste0(temp_dir,"/COVID/Cases_by_age.csv"),
 
 
 # Time series
-col_number = ncol(read.csv(paste0(temp_dir,"/COVID/Cases_by_sex.csv"),
+col_number = ncol(read.csv(paste0(temp_dir,"/Cases_by_sex.csv"),
            sep = ";"))
 
-  read.csv(paste0(temp_dir,"/COVID/Cases_by_sex.csv"),
+  read.csv(paste0(temp_dir,"/Cases_by_sex.csv"),
            sep = ";",
            encoding = "UTF-8",
            colClasses=rep("character",col_number)) %>%
