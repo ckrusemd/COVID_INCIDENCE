@@ -592,6 +592,7 @@ p= df.250  %>%
 
 direct.label(p,list("last.bumpup",cex=0.8))
 ```
+
 # Cases by Age and Sex
 
 ```{r}
