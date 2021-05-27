@@ -464,7 +464,7 @@ df %>%
   ggplot(.,aes(x=Date,y=INCIDENCE)) +
   geom_point() +
   scale_x_date(date_breaks = "2 days",limits=c(Sys.Date()-months(1),Sys.Date()),date_labels = "%A %d %b") +
-  scale_y_continuous(limits=c(75,250),breaks=seq(75,500,by=25)) +
+  scale_y_continuous(limits=c(75,350),breaks=seq(75,500,by=25)) +
   geom_abline(slope = -1,intercept = 200) +
   
   geom_line(data=predicted.incidence.descent,aes(x=Date,y=fit),color="blue") +
@@ -591,6 +591,66 @@ p= df.250  %>%
   scale_y_continuous(limits=c(NA,NA),breaks=seq(0,500,by=25))
 
 direct.label(p,list("last.bumpup",cex=0.8))
+```
+# Cases by Age and Sex
+
+```{r}
+
+
+# Time series
+col_number = ncol(read.csv(paste0(temp_dir,"/COVID/Cases_by_age.csv"),
+           sep = ";"))
+
+# df.250 <-
+  read.csv(paste0(temp_dir,"/COVID/Cases_by_age.csv"),
+           sep = ";",
+           encoding = "UTF-8",
+           colClasses=rep("character",col_number)) %>%
+    gather(stat,value,Antal_bekræftede_COVID.19:Procent_positive) %>% 
+    filter(!Aldersgruppe %in% "I alt") %>% 
+    dplyr::mutate(value=gsub("\\.","",value)) %>% 
+    dplyr::mutate(value=gsub(",",".",value)) %>% 
+    dplyr::mutate(value=as.numeric(value)) %>% 
+    spread(stat,value) %>% 
+    ggplot(.,aes(x=Aldersgruppe)) +
+    geom_col(aes(y=Antal_bekræftede_COVID.19)) +
+    scale_y_continuous(labels = scales::number_format(scale=10^-3,suffix = "K"),expand=c(0,0)) +
+    theme_coviddk +  
+    labs(x="Age Group",y="Cases",caption = timestamp_caption(),title="Cases by Age")
+    
+
+
+```
+
+```{r}
+
+
+# Time series
+col_number = ncol(read.csv(paste0(temp_dir,"/COVID/Cases_by_sex.csv"),
+           sep = ";"))
+
+  read.csv(paste0(temp_dir,"/COVID/Cases_by_sex.csv"),
+           sep = ";",
+           encoding = "UTF-8",
+           colClasses=rep("character",col_number)) %>%
+    dplyr::select(-I_alt) %>% 
+    gather(stat,value,Kvinder_.procent.:Mænd_.procent.) %>% 
+    separate(value,into = c("num","pct"),sep = " \\(") %>% 
+    dplyr::mutate(pct=gsub(")","",pct)) %>% 
+    filter(!Aldersgruppe %in% "I alt") %>% 
+    dplyr::mutate(num=gsub("\\.","",num)) %>% 
+    dplyr::mutate(num=as.numeric(num)) %>% 
+    dplyr::mutate(pct=as.numeric(pct)) %>% 
+    dplyr::mutate(pct=pct/100) %>% 
+    dplyr::mutate(stat=gsub("_.procent.","",stat)) %>% 
+    ggplot(.,aes(x=Aldersgruppe)) +
+    geom_col(aes(y=num)) +
+    facet_wrap(~stat) +
+    scale_y_continuous(labels = scales::number_format(scale=10^-3,suffix = "K"),expand=c(0,0)) +
+    theme_coviddk +  
+    labs(x="Age Group",y="Cases",caption = timestamp_caption(),title="Cases by Sex")
+    
+
 ```
 
 # Antigen Tests
