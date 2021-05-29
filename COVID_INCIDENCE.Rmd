@@ -3,10 +3,10 @@ title: "Denmark Covid Incidence (SSI Data)"
 output:
   html_document:
     df_print: paged
-knit: (function(inputFile, encoding) { 
-    rmarkdown::render(inputFile,
-                      encoding=encoding, 
-                      output_file=file.path('docs/index.html')) })
+#knit: (function(inputFile, encoding) { 
+#    rmarkdown::render(inputFile,
+#                      encoding=encoding, 
+#                      output_file=file.path('docs/index.html')) })
 ---
 
 ```{r include=FALSE }
@@ -1412,23 +1412,23 @@ Currently using the ```G.3``` model while we're awaiting Israel's and the UK's s
 ```{r echo=FALSE  }
 
 df_calendar = bind_rows(
-  data.frame(Group="Gruppe 1",Date=as.Date("2020521", "%Y%U%u")),
-  data.frame(Group="Gruppe 2",Date=as.Date("2021011", "%Y%U%u")),
-  data.frame(Group="Gruppe 3",Date=as.Date("2021051", "%Y%U%u")),
-  data.frame(Group="Gruppe 4 Pt 1",Date=as.Date("2020521", "%Y%U%u")),
-  data.frame(Group="Gruppe 4 Pt 2",Date=as.Date("2021061", "%Y%U%u")),
-  data.frame(Group="Gruppe 5",Date=as.Date("2021011", "%Y%U%u")),
-  data.frame(Group="Gruppe 6",Date=as.Date("2021011", "%Y%U%u")),
-  data.frame(Group="Gruppe 7",Date=as.Date("2021111", "%Y%U%u")),
-  data.frame(Group="Gruppe 8",Date=as.Date("2021131", "%Y%U%u")),
-  data.frame(Group="Gruppe 9",Date=as.Date("2021141", "%Y%U%u")),
-  data.frame(Group="Gruppe 10a",Date=as.Date("2021171", "%Y%U%u")),
-  data.frame(Group="Gruppe 10b",Date=as.Date("2021181", "%Y%U%u")),
-  data.frame(Group="Gruppe 10c",Date=as.Date("2021191", "%Y%U%u")),
-  data.frame(Group="Gruppe 10d1",Date=as.Date("2021211", "%Y%U%u")),
-  data.frame(Group="Gruppe 10d2",Date=as.Date("2021241", "%Y%U%u")),
-  data.frame(Group="Gruppe 10d3",Date=as.Date("2021261", "%Y%U%u")),
-  data.frame(Group="Gruppe 10d4",Date=as.Date("2021291", "%Y%U%u"))
+  data.frame(Group="Gruppe 1",Date=as.Date("2020521", "%Y%U%u"),y=0.3*10^6),
+  data.frame(Group="Gruppe 2",Date=as.Date("2021011", "%Y%U%u"),y=1.8*10^6),
+  data.frame(Group="Gruppe 3",Date=as.Date("2021051", "%Y%U%u"),y=0.35*10^6),
+  data.frame(Group="Gruppe 4 Pt 1",Date=as.Date("2020521", "%Y%U%u"),y=1.8*10^6),
+  data.frame(Group="Gruppe 4 Pt 2",Date=as.Date("2021061", "%Y%U%u"),y=0.3*10^6),
+  data.frame(Group="Gruppe 5",Date=as.Date("2021011", "%Y%U%u"),y=0.3*10^6),
+  data.frame(Group="Gruppe 6",Date=as.Date("2021011", "%Y%U%u"),y=0.3*10^6),
+  data.frame(Group="Gruppe 7",Date=as.Date("2021111", "%Y%U%u"),y=0.4*10^6),
+  data.frame(Group="Gruppe 8",Date=as.Date("2021131", "%Y%U%u"),y=0.5*10^6),
+  data.frame(Group="Gruppe 9",Date=as.Date("2021141", "%Y%U%u"),y=0.6*10^6),
+  data.frame(Group="Gruppe 10a",Date=as.Date("2021171", "%Y%U%u"),y=0.6*10^6),
+  data.frame(Group="Gruppe 10b",Date=as.Date("2021181", "%Y%U%u"),y=0.8*10^6),
+  data.frame(Group="Gruppe 10c",Date=as.Date("2021191", "%Y%U%u"),y=1.0*10^6),
+  data.frame(Group="Gruppe 10d1",Date=as.Date("2021211", "%Y%U%u"),y=1.3*10^6),
+  data.frame(Group="Gruppe 10d2",Date=as.Date("2021241", "%Y%U%u"),y=1.7*10^6),
+  data.frame(Group="Gruppe 10d3",Date=as.Date("2021261", "%Y%U%u"),y=2.0*10^6),
+  data.frame(Group="Gruppe 10d4",Date=as.Date("2021291", "%Y%U%u"),y=2.7*10^6)
 )
 
 ggplot(df.predicted,aes(x=date,y=fit)) +
@@ -1440,12 +1440,19 @@ ggplot(df.predicted,aes(x=date,y=fit)) +
   scale_y_continuous(limits=c(0,NA),breaks = seq(0,5800000,length.out=10),labels = scales::unit_format(accuracy = 0.1,unit = "M",scale = 1e-6,big.mark = ","))+
   geom_vline(xintercept = Sys.Date(),size=1) +
   geom_vline(xintercept = df_calendar$Date,alpha=0.3) +
+  geom_hline(yintercept = 5842000*0.6,color="orange",alpha=1) +
+  geom_hline(yintercept = 5842000*0.7,color="yellow",alpha=1) +
+  geom_hline(yintercept = 5842000*0.8,color="lightseagreen",alpha=1) +
+  annotate(geom="text",x=dmy("14-02-2021"),y=5842000*0.57,label="60% vaccinated") +
+  annotate(geom="text",x=dmy("14-02-2021"),y=5842000*0.67,label="70% vaccinated") +
+  annotate(geom="text",x=dmy("14-02-2021"),y=5842000*0.77,label="80% vaccinated") +
   geom_text(mapping = aes(x = Date,
-                          y = 1000000,
+                          y = y,
                           label = Group),
-            data = df_calendar,size=4,angle=-45,hjust=-0.1) +
+            data = df_calendar,size=4,angle=90,hjust=-0.1) +
   labs(x="Date",y="Cumulative Number of Completed",
        caption = timestamp_caption())
+
 
 
 ```
@@ -1501,7 +1508,7 @@ df %>%
 
 ## Weekly 'Målgruppe' Coverage Progression
 
-```{r fig.width=4,fig.height=8}
+```{r fig.width=6,fig.height=12}
 
 
 num_cols = ncol(read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Vaccinerede_pr_uge_pr_maalgruppe.csv"),
@@ -1544,6 +1551,7 @@ order = c("1. Plejehjemsbeboere",
           "10A. Personer fra årgang 1957-1961",
           "10B. Personer fra årgang 1962-1966",
           "10C. Personer fra årgang 1967-1971",
+          "10D1. Personer fra årgang 1972-1976 og årgang 2002-2005",
           "Resterende")
 
 df %>%
