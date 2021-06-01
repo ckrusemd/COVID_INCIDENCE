@@ -1425,10 +1425,10 @@ df_calendar = bind_rows(
   data.frame(Group="Gruppe 10a",Date=as.Date("2021171", "%Y%U%u"),y=0.6*10^6),
   data.frame(Group="Gruppe 10b",Date=as.Date("2021181", "%Y%U%u"),y=0.8*10^6),
   data.frame(Group="Gruppe 10c",Date=as.Date("2021191", "%Y%U%u"),y=1.0*10^6),
-  data.frame(Group="Gruppe 10d1",Date=as.Date("2021211", "%Y%U%u"),y=1.3*10^6),
-  data.frame(Group="Gruppe 10d2",Date=as.Date("2021241", "%Y%U%u"),y=1.7*10^6),
-  data.frame(Group="Gruppe 10d3",Date=as.Date("2021261", "%Y%U%u"),y=2.0*10^6),
-  data.frame(Group="Gruppe 10d4",Date=as.Date("2021291", "%Y%U%u"),y=2.7*10^6)
+  data.frame(Group="Gruppe 10d1",Date=as.Date("2021201", "%Y%U%u"),y=1.3*10^6),
+  data.frame(Group="Gruppe 10d2",Date=as.Date("2021211", "%Y%U%u"),y=1.7*10^6),
+  data.frame(Group="Gruppe 10d3",Date=as.Date("2021241", "%Y%U%u"),y=2.0*10^6),
+  data.frame(Group="Gruppe 10d4",Date=as.Date("2021271", "%Y%U%u"),y=2.7*10^6)
 )
 
 ggplot(df.predicted,aes(x=date,y=fit)) +
