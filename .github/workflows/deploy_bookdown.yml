@@ -38,6 +38,13 @@ jobs:
         run: Rscript -e 'install.packages(c("rmarkdown","bookdown","pacman","devtools","RCurl","rPref","rvest","epibasix","tabulizer"))'
       - name: Render Book
         run: Rscript -e 'bookdown::render_book("index.Rmd")'
+      - name: Cache R packages 
+        if: runner.os != 'Windows' 
+        uses: actions/cache@v1 
+        with: 
+          path: ${{ env.R_LIBS_USER }} 
+          #key: ${{ runner.os }}-r-${{ matrix.config.r }}-${{ hashFiles('DESCRIPTION') }} 
+          key: r-${{ hashFiles('DESCRIPTION') }}
       - uses: actions/upload-artifact@v1
         with:
           name: _book
