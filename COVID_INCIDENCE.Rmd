@@ -1425,9 +1425,10 @@ unzip(zipfile = zip_path,exdir = temp_dir)
 
 df <-
   read.csv(paste0(temp_dir,"/Vaccine_DB/FaerdigVacc_daekning_DK_prdag.csv"),
-           skip=1,
-           header=FALSE,
-           sep = ",",
+           # skip=1,
+           header=TRUE,
+           sep = ";",
+           fileEncoding="latin1",
            colClasses=c('character',
                         'character',
                         'character',
@@ -1435,6 +1436,7 @@ df <-
                         'character',
                         'character')) %>%
   as_tibble()
+
 ```
 
 
@@ -1606,11 +1608,11 @@ ggplot(df.predicted,aes(x=date,y=fit)) +
 
 num_cols = ncol(read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Maalgrp_Vacc_daekning_Region.csv"),
            header=FALSE,
-           sep = ","))
+           sep = ";"))
 
 columnname = read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Maalgrp_Vacc_daekning_Region.csv"),
            header=FALSE,
-           sep = ",")[1,] %>% 
+           sep = ";")[1,] %>% 
   # t %>% 
   as.character %>% 
   paste0() %>% 
@@ -1621,9 +1623,10 @@ columnnum <- which(grepl("Færdig|Bopælsregion",columnname))
 
 df <-
   read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Maalgrp_Vacc_daekning_Region.csv"),
-           skip=1,
-           header=FALSE,
-           sep = ",",
+           # skip=1,
+           header=TRUE,
+           sep = ";",
+           fileEncoding="latin1",
            colClasses=rep('character',num_cols)) %>%
   as_tibble() %>% 
   dplyr::select(columnnum)
@@ -1656,11 +1659,11 @@ df %>%
 
 num_cols = ncol(read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Vaccinerede_pr_uge_pr_maalgruppe.csv"),
            header=FALSE,
-           sep = ","))
+           sep = ";"))
 
 columnname = read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Vaccinerede_pr_uge_pr_maalgruppe.csv"),
            header=FALSE,
-           sep = ",")[1,] %>% 
+           sep = ";")[1,] %>% 
   # t %>% 
   as.character %>% 
   paste0() %>% 
@@ -1671,14 +1674,15 @@ columnname = read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Vaccinerede_pr_ug
 
 df <-
   read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Vaccinerede_pr_uge_pr_maalgruppe.csv"),
-           skip=1,
-           header=FALSE,
-           sep = ",",
+           # skip=1,
+           header=TRUE,
+           sep = ";",
+           fileEncoding="latin1",
            colClasses=rep('character',num_cols)) %>%
   as_tibble() %>% 
-  dplyr::mutate(V1=paste0(V1,"-1")) %>%
+  dplyr::mutate(Ugenummer=paste0(Ugenummer,"-1")) %>%
   # dplyr::mutate(V1=gsub("W","",V1)) %>% 
-  dplyr::mutate(V1=ISOweek::ISOweek2date(V1)) %>% 
+  dplyr::mutate(Ugenummer=ISOweek::ISOweek2date(Ugenummer)) %>% 
   setNames(.,columnname) %>% 
   gather(stat,value,`Dækning førstegangsvaccinerede (kumulativt i %)`:`Dækning færdigvaccinerede (kumulativt i %)`)
 
@@ -1700,9 +1704,9 @@ order = c("1. Plejehjemsbeboere",
           "Resterende")
 
 df %>%
-  dplyr::mutate(Målgruppe=gsub("\xe6","æ",Målgruppe)) %>% 
-  dplyr::mutate(Målgruppe=gsub("\xe5","å",Målgruppe)) %>% 
-  dplyr::mutate(Målgruppe=gsub("\xf8","ø",Målgruppe)) %>% 
+  # dplyr::mutate(Målgruppe=gsub("\xe6","æ",Målgruppe)) %>% 
+  # dplyr::mutate(Målgruppe=gsub("\xe5","å",Målgruppe)) %>% 
+  # dplyr::mutate(Målgruppe=gsub("\xf8","ø",Målgruppe)) %>% 
   dplyr::mutate(Målgruppe=factor(Målgruppe,levels=order)) %>%
   dplyr::mutate(value=as.numeric(value)/100) %>% 
   ggplot(.,aes(x=Ugenummer,y=value)) +
