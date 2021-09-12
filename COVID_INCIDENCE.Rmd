@@ -376,10 +376,10 @@ summary(fit.incidence.increase.4)
 
 predicted.incidence.increase.4 <- 
   10^predict(fit.incidence.increase.4,
-             data.frame(Date=seq.Date(ymd("2021-06-29"),ymd("2021-09-01"),by = "1 day"),interval = "prediction"),
+             data.frame(Date=seq.Date(ymd("2021-06-29"),Sys.Date(),by = "1 day"),interval = "prediction"),
         interval = "prediction") %>%
   tbl_df() %>%
-  dplyr::mutate(Date=seq.Date(ymd("2021-06-29"),ymd("2021-09-01"),by = "1 day"))
+  dplyr::mutate(Date=seq.Date(ymd("2021-06-29"),Sys.Date(),by = "1 day"))
 
 
 ```
@@ -434,7 +434,7 @@ df %>%
   geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-02-2020"),dmy("01-08-2030"),by="1 day"),"month")),color="gray70") +
   geom_hline(yintercept = seq(100,1000,by=100),color="gray70") + 
   
-  scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),dmy("01-09-2021")),date_labels = "%Y %b") +
+  scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),Sys.Date()),date_labels = "%Y %b") +
   scale_y_continuous(limits=c(0,1000),breaks=seq(0,1000,by=50),expand=c(0,0)) +
   
   theme_coviddk +
@@ -482,10 +482,10 @@ df %>%
   geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=lwr),color="black") +
   geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=upr),color="black") +
   
-  geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-01-2021"),dmy("01-09-2021"),by="1 day"),"month")),color="gray70") +
+  geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-01-2021"),Sys.Date(),by="1 day"),"month")),color="gray70") +
   geom_hline(yintercept = seq(0,500,by=100),color="gray70") + 
   
-  scale_x_date(date_breaks = "14 days",limits=c(dmy("01-01-2021"),dmy("01-09-2021")),date_labels = "%Y %b") +
+  scale_x_date(date_breaks = "14 days",limits=c(dmy("01-01-2021"),Sys.Date()),date_labels = "%Y %b") +
   scale_y_continuous(limits=c(0,500),breaks=seq(0,500,by=25),expand=c(0,0)) +
   
   
@@ -942,7 +942,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   labs(title="Cumulative Tests over Time",x="Date",y="Cumulative Tests",
        caption = timestamp_caption()) +
   scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),Sys.Date()+days(7)),date_labels = "%b %Y") +
-    scale_y_continuous(limits=c(0,NA),breaks=seq(0,350000000,by=5000000),expand=c(0,0),labels=scales::comma) +
+    scale_y_continuous(limits=c(0,NA),breaks=seq(0,100000000,by=5000000),expand=c(0,0),labels=scales::comma) +
   theme_coviddk +
   geom_smooth(span=0.1)
 
@@ -1026,7 +1026,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   labs(title="% Positive Recent Month",x="Date",y="% Positive",
        caption = timestamp_caption()) +
   scale_x_date(date_breaks = "2 day",limits=c(Sys.Date()-months(1),Sys.Date()),date_labels = "%A %d %b") +
-  scale_y_continuous(limits=c(0,0.01),labels = scales::percent_format(accuracy = 0.1),expand=c(0,0),breaks = seq(0,1,by=0.001)) +
+  scale_y_continuous(limits=c(0,NA),labels = scales::percent_format(accuracy = 0.1),expand=c(0,0),breaks = seq(0,1,by=0.001)) +
   geom_text(aes(label=scales::percent(x = PosPct,accuracy = 0.1)),angle=45,vjust=-0.1,hjust=-0.1)
 
 ```
@@ -1103,7 +1103,7 @@ read.csv(paste0(temp_dir,"/Newly_admitted_over_time.csv"),sep=";") %>%
   theme(legend.position="null") +
   # geom_smooth(span=0.1,color="black") +
   scale_y_continuous(limits=c(0,NA)) +
-  scale_x_date(date_breaks = "1 months",limits=c(dmy("01-02-2020"),dmy("01-07-2021")),date_labels = "%b") +
+  scale_x_date(date_breaks = "1 months",limits=c(dmy("01-02-2020"),Sys.Date()),date_labels = "%b") +
   labs(caption = timestamp_caption())
 
 ```
@@ -1173,7 +1173,7 @@ ggplot(df.deaths,aes(x=date,y=deaths)) +
   geom_smooth(span=0.1) +
   theme_coviddk +
   scale_y_continuous(limits=c(0,40),expand=c(0,0)) +
-  scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),dmy("01-07-2021")),date_labels = "%b %Y") +
+  scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),Sys.Date()),date_labels = "%b %Y") +
   labs(title="Number of Daily Deaths",x = "Date", y = "Number of Daily Deaths",
        caption = timestamp_caption())
 
@@ -1502,7 +1502,7 @@ ggplot(
   scale_x_date(date_breaks = "1 month",date_labels = "%Y-%b") +
   theme_coviddk +
   scale_x_date(date_labels = "%d %b",date_breaks = "14 days")+
-  scale_y_continuous(limits=c(0,NA),breaks = seq(0,5800000,by=100000),labels = scales::unit_format(accuracy = 0.1,unit = "M",scale = 1e-6,big.mark = ",")) +
+  scale_y_continuous(limits=c(0,NA),breaks = seq(0,5800000,by=250000),labels = scales::unit_format(accuracy = 0.1,unit = "M",scale = 1e-6,big.mark = ",")) +
   labs(x="Date",y="Cumulative Completed Vaccination",
        caption = timestamp_caption())
 ```
@@ -1762,6 +1762,7 @@ order = c("1. Plejehjemsbeboere",
           "10D2. Personer fra årgang 1977-1981 og årgang 1997-2001",
           "10D3. Personer fra årgang 1982-1986 og årgang 1992-1996",
           "10D4. Personer fra årgang 1987-1991",
+          "11. Personer fra årgang 2006-2009",
           "Resterende")
 
 df %>%
