@@ -1026,7 +1026,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   labs(title="% Positive Recent Month",x="Date",y="% Positive",
        caption = timestamp_caption()) +
   scale_x_date(date_breaks = "2 day",limits=c(Sys.Date()-months(1),Sys.Date()),date_labels = "%A %d %b") +
-  scale_y_continuous(limits=c(0,NA),labels = scales::percent_format(accuracy = 0.1),expand=c(0,0),breaks = seq(0,1,by=0.001)) +
+  scale_y_continuous(limits=c(0,NA),labels = scales::percent_format(accuracy = 0.1),expand=c(0,0),breaks = seq(0,1,by=0.025)) +
   geom_text(aes(label=scales::percent(x = PosPct,accuracy = 0.1)),angle=45,vjust=-0.1,hjust=-0.1)
 
 ```
@@ -1060,7 +1060,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
 
 ## Weekly Testing by Region
 
-```{r  }
+```{r eval=F }
 
 read.csv(paste0(temp_dir,"/Test_regioner.csv"),sep=";") %>% 
   # slice(c(1:(nrow(.)-4))) %>% 
