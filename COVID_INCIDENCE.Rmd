@@ -1451,7 +1451,6 @@ unzip(zipfile = zip_path,exdir = temp_dir)
 
 ```
 
-
 ```{r}
 
 df <-
@@ -1817,5 +1816,54 @@ df %>%
 
 ```
 
+## Sogn
 
+```{r}
+
+file_path = paste0(temp_dir,"/Vaccination_sogne.csv")
+
+num_cols = ncol(read.csv(file_path,
+           header=FALSE,
+           sep = ";"))
+
+columnname = read.csv(file_path,
+           header=FALSE,
+           sep = ";")[1,] %>% 
+  as.character %>% 
+  paste0() %>% 
+  gsub("\xe6","æ",.) %>% 
+  gsub("\xe5","å",.) %>%
+  gsub("\xf8","ø",.)
+
+df_sogne = read.csv(file = file_path,
+           # skip=1,
+           header=TRUE,
+           sep = ",",
+           fileEncoding="latin1",
+           colClasses=rep('character',num_cols)) %>% 
+  dplyr::mutate(Inviterede_i_sognet=as.numeric(Inviterede_i_sognet),
+                Antal_inviteret_ikke_booket=as.numeric(Antal_inviteret_ikke_booket))
+
+
+```
+
+### Invited and booked
+
+```{r}
+
+df_sogne %>% 
+  dplyr::mutate(prop_completed=(Inviterede_i_sognet-Antal_inviteret_ikke_booket)/Inviterede_i_sognet) %>% 
+  dplyr::mutate(bottom_10pct=ifelse(prop_completed<quantile(prop_completed,0.05,na.rm=T),sogn,NA)) %>% 
+  ggplot(.,aes(x=Inviterede_i_sognet,Inviterede_i_sognet-Antal_inviteret_ikke_booket)) +
+  geom_point(aes(color=Kommune_current)) +
+  geom_abline(intercept = 0,slope = 1) +
+  theme_coviddk +
+  theme(legend.position="null") +
+  scale_x_continuous(expand=c(0,0),breaks = seq(0,50000,by=5000)) +
+  scale_y_continuous(expand=c(0,0),breaks = seq(0,50000,by=5000)) +
+  labs(x="Invited in sogn",y="Booked in sogn") +
+  geom_smooth() +
+  geom_text(aes(label=bottom_10pct),size=3,hjust=-0.1)
+
+```
 
