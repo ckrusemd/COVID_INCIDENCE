@@ -176,8 +176,6 @@ A compilation of visualizations and analyses of Danish COVID-19 incidence number
 
 Calculations are performed daily at 14:00 CET in line with daily new data packages by SSI.
 
-Numbers from thee most recent two days are excluded, as they are often subject to several revisions.
-
 This report was compiled `r print_danish_time() `.
 
 ```{r }
@@ -255,9 +253,11 @@ df <- df %>%
 
 ```
 
-# 14 Day Incidence per 100,000 citizens
+# Incidence Rates
 
-Total Danish population (~5.82 million) incidence in the past 14 days per 100,000 citizens since the beginning of the COVID-19 pandemic. Includes exponential curves of 2nd wave and early 3rd wave in 2021.
+## 14 Day Incidence per 100,000 citizens
+
+Total Danish population (~5.82 million) incidence in the past 14 days per 100,000 citizens since the beginning of the COVID-19 pandemic.
 
 ```{r  }
 ## DESCENT #1
@@ -367,7 +367,8 @@ predicted.incidence.decrease.3 <-
 ## INCREASE 4
 df.fit.increase.4 <- 
   df %>%
-  filter(Date>=ymd("2021-06-29"))
+  filter(Date>=ymd("2021-06-29")) %>%
+  filter(Date<=ymd("2021-07-15"))
 
 fit.incidence.increase.4 <- 
   lm(log10(INCIDENCE)~Date,data=df.fit.increase.4)
@@ -376,10 +377,45 @@ summary(fit.incidence.increase.4)
 
 predicted.incidence.increase.4 <- 
   10^predict(fit.incidence.increase.4,
-             data.frame(Date=seq.Date(ymd("2021-06-29"),Sys.Date(),by = "1 day"),interval = "prediction"),
+             data.frame(Date=seq.Date(ymd("2021-06-29"),ymd("2021-07-15"),by = "1 day"),interval = "prediction"),
         interval = "prediction") %>%
   tbl_df() %>%
-  dplyr::mutate(Date=seq.Date(ymd("2021-06-29"),Sys.Date(),by = "1 day"))
+  dplyr::mutate(Date=seq.Date(ymd("2021-06-29"),ymd("2021-07-15"),by = "1 day"))
+
+## DECREASE 4
+df.fit.decrease.4 <- 
+  df %>%
+  filter(Date>=ymd("2021-09-01")) %>%
+  filter(Date<=ymd("2021-09-15"))
+
+fit.incidence.decrease.4 <- 
+  lm(log10(INCIDENCE)~Date,data=df.fit.decrease.4)
+
+summary(fit.incidence.decrease.4)
+
+predicted.incidence.decrease.4 <- 
+  10^predict(fit.incidence.decrease.4,
+             data.frame(Date=seq.Date(ymd("2021-09-01"),ymd("2021-09-15"),by = "1 day"),interval = "prediction"),
+        interval = "prediction") %>%
+  tbl_df() %>%
+  dplyr::mutate(Date=seq.Date(ymd("2021-09-01"),ymd("2021-09-15"),by = "1 day"))
+
+## INCREASE 5
+df.fit.increase.5 <- 
+  df %>%
+  filter(Date>=ymd("2021-10-01"))
+
+fit.incidence.increase.5 <- 
+  lm(log10(INCIDENCE)~Date,data=df.fit.increase.5)
+
+summary(fit.incidence.increase.5)
+
+predicted.incidence.increase.5 <- 
+  10^predict(fit.incidence.increase.5,
+             data.frame(Date=seq.Date(ymd("2021-10-01"),Sys.Date()+days(14),by = "1 day"),interval = "prediction"),
+        interval = "prediction") %>%
+  tbl_df() %>%
+  dplyr::mutate(Date=seq.Date(ymd("2021-10-01"),Sys.Date()+days(14),by = "1 day"))
 
 
 ```
@@ -431,10 +467,18 @@ df %>%
   geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=lwr),color="black") +
   geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=upr),color="black") +
   
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=fit),color="green") +
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=lwr),color="black") +
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=upr),color="black") +
+  
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=fit),color="red") +
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=lwr),color="black") +
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=upr),color="black") +
+  
   geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-02-2020"),dmy("01-08-2030"),by="1 day"),"month")),color="gray70") +
   geom_hline(yintercept = seq(100,1000,by=100),color="gray70") + 
   
-  scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),Sys.Date()),date_labels = "%Y %b") +
+  scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),Sys.Date()+days(30)),date_labels = "%Y %b") +
   scale_y_continuous(limits=c(0,1000),breaks=seq(0,1000,by=50),expand=c(0,0)) +
   
   theme_coviddk +
@@ -482,6 +526,14 @@ df %>%
   geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=lwr),color="black") +
   geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=upr),color="black") +
   
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=fit),color="green") +
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=lwr),color="black") +
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=upr),color="black") +
+  
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=fit),color="red") +
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=lwr),color="black") +
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=upr),color="black") +
+  
   geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-01-2021"),Sys.Date(),by="1 day"),"month")),color="gray70") +
   geom_hline(yintercept = seq(0,500,by=100),color="gray70") + 
   
@@ -502,7 +554,6 @@ df %>%
 recent_30_days$`14 Day Incidence Per 100K` = round(recent_30_days$`14 Day Incidence Per 100K`,0)
 recent_30_days %>%
   arrange(desc(Date)) %>% 
-  head(10) %>% 
   knitr::kable() 
 
 ```
@@ -547,6 +598,14 @@ df %>%
   geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=lwr),color="black") +
   geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=upr),color="black") +
   
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=fit),color="green") +
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=lwr),color="black") +
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=upr),color="black") +
+  
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=fit),color="red") +
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=lwr),color="black") +
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=upr),color="black") +
+  
   geom_hline(yintercept = seq(0,1000,by=50),color="gray70") + 
   
   
@@ -557,7 +616,7 @@ df %>%
 ```
 
 
-## 250 Incidence Risk
+## Municipalities
 
 Identifies municipalities with 7-day incidence numbers per 100,000 above or closing in on the 250 limit.
 
@@ -623,10 +682,9 @@ p= df.250  %>%
   geom_hline(yintercept = 200,color="yellow",size=0.8,alpha=0.7) +
   labs(x="Date",y="7-day Incidence Per 100,000",
        caption = timestamp_caption()) +
-  scale_x_date(date_breaks = "2 days",date_labels = "%A %d %b",expand=c(0,3)) +
-  scale_y_continuous(limits=c(0,500),breaks=seq(0,500,by=25))
+  scale_x_date(date_breaks = "2 days",date_labels = "%A %d %b",expand=c(0,3))
 
-direct.label(p,list("last.bumpup",cex=1))
+direct.label(p,list("last.bumpup",cex=0.6))
 
 ```
 
@@ -662,7 +720,7 @@ p= df.250  %>%
   scale_x_date(date_breaks = "2 days",date_labels = "%A %d %b",expand=c(0,3)) +
   scale_y_continuous(limits=c(NA,NA),breaks=seq(0,500,by=25))
 
-direct.label(p,list("last.bumpup",cex=0.8))
+direct.label(p,list("last.bumpup",cex=0.6))
 ```
 
 
@@ -679,7 +737,7 @@ df.250 %>%
   knitr::kable()
 ```
 
-# Cases by Age and Sex
+## Cases by Age and Sex
 
 ```{r}
 
@@ -942,7 +1000,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   labs(title="Cumulative Tests over Time",x="Date",y="Cumulative Tests",
        caption = timestamp_caption()) +
   scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),Sys.Date()+days(7)),date_labels = "%b %Y") +
-    scale_y_continuous(limits=c(0,NA),breaks=seq(0,100000000,by=5000000),expand=c(0,0),labels=scales::comma) +
+    scale_y_continuous(limits=c(0,NA),breaks=seq(0,100000000,by=5000000),labels=scales::comma) +
   theme_coviddk +
   geom_smooth(span=0.1)
 
@@ -991,7 +1049,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
 
 ## Positive-Percent
 
-## Since March 2020
+### Since March 2020
 
 ```{r  }
 
@@ -1011,7 +1069,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
 
 ```
 
-## Recent Month
+### Recent Month
 
 ```{r}
 
@@ -1026,12 +1084,12 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   labs(title="% Positive Recent Month",x="Date",y="% Positive",
        caption = timestamp_caption()) +
   scale_x_date(date_breaks = "2 day",limits=c(Sys.Date()-months(1),Sys.Date()),date_labels = "%A %d %b") +
-  scale_y_continuous(limits=c(0,NA),labels = scales::percent_format(accuracy = 0.1),expand=c(0,0),breaks = seq(0,1,by=0.025)) +
-  geom_text(aes(label=scales::percent(x = PosPct,accuracy = 0.1)),angle=45,vjust=-0.1,hjust=-0.1)
+  scale_y_continuous(limits=c(0,0.1),labels = scales::percent_format(accuracy = 0.1),expand=c(0,0),breaks = seq(0,1,by=0.025)) +
+  geom_text(aes(label=scales::percent(x = PosPct,accuracy = 0.1)),angle=45,vjust=-0.1,hjust=-0.1,size=3)
 
 ```
 
-## Number of tests vs. positive-% over time
+### Number of tests vs. positive-% over time
 
 ```{r  }
 
@@ -1056,33 +1114,70 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
 
 
 ```
-# Regional testing
 
-## Weekly Testing by Region
+# Cases, admissions, deaths
 
-```{r eval=F }
+## Time lag between surges in cases, admissions and deaths
 
-read.csv(paste0(temp_dir,"/Test_regioner.csv"),sep=";") %>% 
-  # slice(c(1:(nrow(.)-4))) %>% 
+```{r}
+
+# 1. Tests
+df.tests <-
+  read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),
+           sep=";",
+           colClasses=c('character',
+                        'character',
+                        'character',
+                        'character',
+                        'character',
+                        'character',
+                        'character')) %>%
+  dplyr::slice(c(1:(nrow(.)-4))) %>% 
   as_tibble() %>% 
-  dplyr::mutate(Date=paste0(ugenr,"-01")) %>% 
-  dplyr::mutate(Date=as.Date(paste0(ugenr,"-1"), "%Y-%U-%u")) %>% 
-  na.omit() %>% 
-  dplyr::select(-c(7,8,9,10)) %>% 
-  gather(Region,Tested,c(2:6)) %>% 
-  ggplot(.,aes(x=Date,y=Tested,color=Region)) +
-  geom_point() +
-  labs(title="Number of Weekly Tests",x="Date",y="Number of Weekly Tests",
-       caption = timestamp_caption()) +
-  scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),Sys.Date()+days(7)),date_labels = "%b") +
-  scale_y_continuous(limits=c(0,120000),breaks=seq(0,120000,by=10000),expand=c(0,0),labels=scales::comma) +
-  geom_smooth(span=0.1) +
-  theme_coviddk 
+  dplyr::mutate(NewPositive=as.integer(gsub("\\.","",trimws(NewPositive))),
+                Type="New Positive",
+                Date=ymd(Date)) %>% 
+  dplyr::select(Date,Type,NewPositive) %>% 
+  rename(Value=NewPositive) %>% 
+  dplyr::mutate(Value=scales::rescale(Value,to=c(0,100)))
 
+# 2. Admissions
+df.admissions = read.csv(paste0(temp_dir,"/Newly_admitted_over_time.csv"),sep=";") %>% 
+  dplyr::select(c(1:6,8)) %>% 
+  setNames(.,c("Dato","Hovedstaden","Sjælland","Syddanmark","Midtjylland","Nordjylland","Total")) %>% 
+  gather(Type,Value,Hovedstaden:Total) %>% 
+  filter(Type %in% "Total") %>% 
+  dplyr::mutate(Date=ymd(Dato),
+                Type="Admissions") %>% 
+  dplyr::select(Date,Type,Value)  %>% 
+  dplyr::mutate(Value=scales::rescale(Value,to=c(0,100)))
 
+# 3. Deaths
+df.deaths = read.csv(paste0(temp_dir,"/Deaths_over_time.csv"),sep=";") %>% 
+  setNames(.,c("Dato","Antal_døde")) %>% 
+  slice(-c(nrow(.))) %>% 
+  dplyr::rename(date=Dato,
+         deaths=Antal_døde) %>% 
+  dplyr::mutate(Date=ymd(date)) %>% 
+  gather(Type,Value,deaths) %>% 
+  dplyr::select(Date,Type,Value)   %>% 
+  dplyr::mutate(Value=scales::rescale(Value,to=c(0,100)))
+
+# Bind
+df.tests %>% 
+  bind_rows(df.admissions) %>% 
+  bind_rows(df.deaths) %>% 
+  ggplot(.,aes(x=Date,y=Value,color=Type)) +
+  geom_point(aes(group=Type),alpha=0.2) +
+  geom_smooth(aes(group=Type),span=0.1) +
+  scale_y_continuous(expand=c(0,0),limits=c(0,100),breaks=seq(0,100,by=5)) +
+  scale_x_date(date_labels = "%b %Y",date_breaks = "1 month")+
+  scale_color_discrete(labels=c("Admissions","Deaths","New Positive Cases")) + 
+  theme_coviddk +
+  labs(y="Index (0-100)",
+       caption = timestamp_caption())
 
 ```
-
 
 # Admissions
 
@@ -1097,7 +1192,7 @@ read.csv(paste0(temp_dir,"/Newly_admitted_over_time.csv"),sep=";") %>%
   filter(!Metric %in% "Total") %>% 
   dplyr::mutate(Dato=ymd(Dato)) %>% 
   ggplot(.,aes(x=Dato,y=Value,color=Metric)) +
-  facet_wrap(~Metric,ncol=1) +
+  facet_wrap(~Metric,ncol=1,scales="free") +
   geom_col() +
   theme_coviddk +
   theme(legend.position="null") +
@@ -1130,7 +1225,7 @@ read.csv(paste0(temp_dir,"/Newly_admitted_over_time.csv"),sep=";") %>%
 
 ## Days Since Last Admissions
 
-```{r fig.height=8,fig.width=12 }
+```{r fig.height=14,fig.width=12 }
 
 read.csv(paste0(temp_dir,"/Newly_admitted_over_time.csv"),sep=";") %>% 
   dplyr::select(c(1:6,8)) %>% 
@@ -1215,70 +1310,6 @@ read.csv(paste0(temp_dir,"/Deaths_over_time.csv"),sep=";") %>%
   labs(caption = timestamp_caption(),
        x = "Date", 
        y = "Days Since Last Death")
-
-```
-
-# Cases, admissions, deaths
-
-## Time lag between surges in cases, admissions and deaths
-
-```{r}
-
-# 1. Tests
-df.tests <-
-  read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),
-           sep=";",
-           colClasses=c('character',
-                        'character',
-                        'character',
-                        'character',
-                        'character',
-                        'character',
-                        'character')) %>%
-  dplyr::slice(c(1:(nrow(.)-4))) %>% 
-  as_tibble() %>% 
-  dplyr::mutate(NewPositive=as.integer(gsub("\\.","",trimws(NewPositive))),
-                Type="New Positive",
-                Date=ymd(Date)) %>% 
-  dplyr::select(Date,Type,NewPositive) %>% 
-  rename(Value=NewPositive) %>% 
-  dplyr::mutate(Value=scales::rescale(Value,to=c(0,100)))
-
-# 2. Admissions
-df.admissions = read.csv(paste0(temp_dir,"/Newly_admitted_over_time.csv"),sep=";") %>% 
-  dplyr::select(c(1:6,8)) %>% 
-  setNames(.,c("Dato","Hovedstaden","Sjælland","Syddanmark","Midtjylland","Nordjylland","Total")) %>% 
-  gather(Type,Value,Hovedstaden:Total) %>% 
-  filter(Type %in% "Total") %>% 
-  dplyr::mutate(Date=ymd(Dato),
-                Type="Admissions") %>% 
-  dplyr::select(Date,Type,Value)  %>% 
-  dplyr::mutate(Value=scales::rescale(Value,to=c(0,100)))
-
-# 3. Deaths
-df.deaths = read.csv(paste0(temp_dir,"/Deaths_over_time.csv"),sep=";") %>% 
-  setNames(.,c("Dato","Antal_døde")) %>% 
-  slice(-c(nrow(.))) %>% 
-  dplyr::rename(date=Dato,
-         deaths=Antal_døde) %>% 
-  dplyr::mutate(Date=ymd(date)) %>% 
-  gather(Type,Value,deaths) %>% 
-  dplyr::select(Date,Type,Value)   %>% 
-  dplyr::mutate(Value=scales::rescale(Value,to=c(0,100)))
-
-# Bind
-df.tests %>% 
-  bind_rows(df.admissions) %>% 
-  bind_rows(df.deaths) %>% 
-  ggplot(.,aes(x=Date,y=Value,color=Type)) +
-  geom_point(aes(group=Type),alpha=0.2) +
-  geom_smooth(aes(group=Type),span=0.1) +
-  scale_y_continuous(expand=c(0,0),limits=c(0,100),breaks=seq(0,100,by=5)) +
-  scale_x_date(date_labels = "%b %Y",date_breaks = "1 month")+
-  scale_color_discrete(labels=c("Admissions","Deaths","New Positive Cases")) + 
-  theme_coviddk +
-  labs(y="Index (0-100)",
-       caption = timestamp_caption())
 
 ```
 
@@ -1779,7 +1810,7 @@ df %>%
   labs(y=NULL,x=NULL,caption=timestamp_caption(),title="'Målgruppe' vaccination coverage") +
   # geom_text(aes(label=scales::percent(value,accuracy = 3))) +
   scale_y_continuous(labels=scales::percent) +
-  scale_x_date(date_labels = "W%U %Y",date_breaks = "1 week") +
+  scale_x_date(date_labels = "W%U %Y",date_breaks = "3 week") +
   geom_vline(xintercept = seq.Date(dmy("01-01-2020"),dmy("01-01-2020")+years(5),by = "1 month"))
 
 
