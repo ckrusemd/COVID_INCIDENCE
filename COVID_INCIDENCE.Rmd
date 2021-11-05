@@ -1849,7 +1849,7 @@ df_sogne = read.csv(file = file_path,
 
 ### Invited and booked
 
-```{r eval=F}}
+```{r eval=F}
 
 df_sogne %>% 
   dplyr::mutate(prop_completed=(Inviterede_i_sognet-Antal_inviteret_ikke_booket)/Inviterede_i_sognet) %>% 
