@@ -32,11 +32,13 @@ jobs:
         run: Rscript -e 'install.packages(c("rvest"))'
       - name: Enable Rjava
         run: sudo R CMD javareconf
+      - name: Install tabulizer from source
+        run:  Rscript -e 'install.packages("https://cran.r-project.org/src/contrib/Archive/tabulizer/tabulizer_0.2.2.tar.gz", repos = NULL, type="source")'
       - name: Install Rjava before tabulizer
         #run:  Rscript -e 'install.packages("rJava"); library(rJava); install.packages("devtools");devtools::install_github("ropensci/tabulizer", args="--no-multiarch")'
-        run:  Rscript -e 'install.packages("rJava"); library(rJava); install.packages("devtools"); install.packages("tabulizer")'
+        run:  Rscript -e 'install.packages("rJava"); library(rJava); install.packages("devtools");'
       - name: Install rmarkdown
-        run: Rscript -e 'install.packages(c("rmarkdown","bookdown","pacman","devtools","RCurl","rPref","rvest","epibasix","tabulizer"))'
+        run: Rscript -e 'install.packages(c("rmarkdown","bookdown","pacman","devtools","RCurl","rPref","rvest","epibasix"))'
       - name: Render Book
         run: Rscript -e 'bookdown::render_book("index.Rmd")'
       - name: Cache R packages 
