@@ -1818,7 +1818,7 @@ df %>%
 
 ## Sogn
 
-```{r}
+```{r eval=F}
 
 file_path = paste0(temp_dir,"/Vaccination_sogne.csv")
 
@@ -1849,7 +1849,7 @@ df_sogne = read.csv(file = file_path,
 
 ### Invited and booked
 
-```{r}
+```{r eval=F}}
 
 df_sogne %>% 
   dplyr::mutate(prop_completed=(Inviterede_i_sognet-Antal_inviteret_ikke_booket)/Inviterede_i_sognet) %>% 
