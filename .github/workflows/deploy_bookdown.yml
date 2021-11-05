@@ -36,7 +36,7 @@ jobs:
         #run:  Rscript -e 'install.packages("rJava"); library(rJava); install.packages("devtools");devtools::install_github("ropensci/tabulizer", args="--no-multiarch")'
         run:  Rscript -e 'install.packages("rJava"); library(rJava); install.packages("devtools");'
       - name: Install rmarkdown
-        run: Rscript -e 'install.packages(c("rmarkdown","bookdown","pacman","devtools","RCurl","rPref","rvest","epibasix","png))'
+        run: Rscript -e 'install.packages(c("rmarkdown","bookdown","pacman","devtools","RCurl","rPref","rvest","epibasix","png"))'
       - name: Install tabulizerjars from source
         run:  Rscript -e 'install.packages("https://cran.r-project.org/src/contrib/Archive/tabulizerjars/tabulizerjars_1.0.1.tar.gz", repos = NULL, type="source")'
       - name: Install tabulizer from source
