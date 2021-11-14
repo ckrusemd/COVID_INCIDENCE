@@ -535,10 +535,10 @@ df %>%
   geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=upr),color="black") +
   
   geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-01-2021"),Sys.Date(),by="1 day"),"month")),color="gray70") +
-  geom_hline(yintercept = seq(0,500,by=100),color="gray70") + 
+  geom_hline(yintercept = seq(0,800,by=100),color="gray70") + 
   
   scale_x_date(date_breaks = "14 days",limits=c(dmy("01-01-2021"),Sys.Date()),date_labels = "%Y %b") +
-  scale_y_continuous(limits=c(0,500),breaks=seq(0,500,by=25),expand=c(0,0)) +
+  scale_y_continuous(limits=c(0,800),breaks=seq(0,800,by=25),expand=c(0,0)) +
   
   
   theme_coviddk +
@@ -567,7 +567,7 @@ df %>%
   ggplot(.,aes(x=Date,y=INCIDENCE)) +
   geom_point() +
   scale_x_date(date_breaks = "2 days",limits=c(Sys.Date()-months(1),Sys.Date()),date_labels = "%A %d %b") +
-  scale_y_continuous(limits=c(0,350),breaks=seq(0,500,by=25)) +
+  scale_y_continuous(limits=c(0,800),breaks=seq(0,800,by=25)) +
   geom_abline(slope = -1,intercept = 200) +
   
   geom_line(data=predicted.incidence.descent,aes(x=Date,y=fit),color="blue") +
