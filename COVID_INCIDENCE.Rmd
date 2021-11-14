@@ -1818,7 +1818,7 @@ df %>%
 
 ## Sogn
 
-```{r eval=F}
+```{r }
 
 file_path = paste0(temp_dir,"/Vaccination_sogne.csv")
 
@@ -1849,13 +1849,13 @@ df_sogne = read.csv(file = file_path,
 
 ### Invited and booked
 
-```{r eval=F}
+```{r }
 
 df_sogne %>% 
   dplyr::mutate(prop_completed=(Inviterede_i_sognet-Antal_inviteret_ikke_booket)/Inviterede_i_sognet) %>% 
-  dplyr::mutate(bottom_10pct=ifelse(prop_completed<quantile(prop_completed,0.05,na.rm=T),sogn,NA)) %>% 
+  dplyr::mutate(bottom_10pct=ifelse(prop_completed<quantile(prop_completed,0.05,na.rm=T),Sogn,NA)) %>% 
   ggplot(.,aes(x=Inviterede_i_sognet,Inviterede_i_sognet-Antal_inviteret_ikke_booket)) +
-  geom_point(aes(color=Kommune_current)) +
+  geom_point(aes(color=Kommune)) +
   geom_abline(intercept = 0,slope = 1) +
   theme_coviddk +
   theme(legend.position="null") +
@@ -1867,3 +1867,25 @@ df_sogne %>%
 
 ```
 
+### Completed vaccination
+
+
+### Invited and booked
+
+```{r }
+
+df_sogne %>% 
+  dplyr::mutate(prop_completed=(Inviterede_i_sognet-Antal_inviteret_ikke_booket)/Inviterede_i_sognet) %>% 
+  dplyr::mutate(bottom_10pct=ifelse(prop_completed<quantile(prop_completed,0.05,na.rm=T),Sogn,NA)) %>% 
+  ggplot(.,aes(x=Inviterede_i_sognet,Inviterede_i_sognet-Antal_inviteret_ikke_booket)) +
+  geom_point(aes(color=Kommune)) +
+  geom_abline(intercept = 0,slope = 1) +
+  theme_coviddk +
+  theme(legend.position="null") +
+  scale_x_continuous(expand=c(0,0),breaks = seq(0,50000,by=5000)) +
+  scale_y_continuous(expand=c(0,0),breaks = seq(0,50000,by=5000)) +
+  labs(x="Invited in sogn",y="Booked in sogn") +
+  geom_smooth() +
+  geom_text(aes(label=bottom_10pct),size=3,hjust=-0.1)
+
+```
