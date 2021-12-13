@@ -476,10 +476,10 @@ df %>%
   geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=upr),color="black") +
   
   geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-02-2020"),dmy("01-08-2030"),by="1 day"),"month")),color="gray70") +
-  geom_hline(yintercept = seq(100,1000,by=100),color="gray70") + 
+  geom_hline(yintercept = seq(100,2000,by=100),color="gray70") + 
   
   scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),Sys.Date()+days(30)),date_labels = "%Y %b") +
-  scale_y_continuous(limits=c(0,1000),breaks=seq(0,1000,by=50),expand=c(0,0)) +
+  scale_y_continuous(limits=c(0,2000),breaks=seq(0,2000,by=100),expand=c(0,0)) +
   
   theme_coviddk +
   
@@ -535,10 +535,10 @@ df %>%
   geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=upr),color="black") +
   
   geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-01-2021"),Sys.Date(),by="1 day"),"month")),color="gray70") +
-  geom_hline(yintercept = seq(0,800,by=100),color="gray70") + 
+  geom_hline(yintercept = seq(0,2000,by=100),color="gray70") + 
   
   scale_x_date(date_breaks = "14 days",limits=c(dmy("01-01-2021"),Sys.Date()),date_labels = "%Y %b") +
-  scale_y_continuous(limits=c(0,800),breaks=seq(0,800,by=25),expand=c(0,0)) +
+  scale_y_continuous(limits=c(0,2000),breaks=seq(0,2000,by=25),expand=c(0,0)) +
   
   
   theme_coviddk +
@@ -567,7 +567,7 @@ df %>%
   ggplot(.,aes(x=Date,y=INCIDENCE)) +
   geom_point() +
   scale_x_date(date_breaks = "2 days",limits=c(Sys.Date()-months(1),Sys.Date()),date_labels = "%A %d %b") +
-  scale_y_continuous(limits=c(0,800),breaks=seq(0,800,by=25)) +
+  scale_y_continuous(limits=c(0,2000),breaks=seq(0,2000,by=100)) +
   geom_abline(slope = -1,intercept = 200) +
   
   geom_line(data=predicted.incidence.descent,aes(x=Date,y=fit),color="blue") +
@@ -606,7 +606,7 @@ df %>%
   geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=lwr),color="black") +
   geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=upr),color="black") +
   
-  geom_hline(yintercept = seq(0,1000,by=50),color="gray70") + 
+  geom_hline(yintercept = seq(0,2000,by=100),color="gray70") + 
   
   
   theme_coviddk +
@@ -879,7 +879,7 @@ ggplot(df.antigen_pcr,aes(x=Dato,y=AG_pos)) +
   labs(title="Daily Positive Antigen Tests",
        x="Date",y="Number of Positive Tests",
        caption = timestamp_caption()) +
-  scale_y_continuous(labels=scales::comma,expand=c(0,0),breaks=seq(0,1000,by=50),limits=c(0,NA)) +
+  scale_y_continuous(labels=scales::comma,expand=c(0,0),breaks=seq(0,5000,by=250),limits=c(0,NA)) +
   scale_x_date(date_breaks = "14 days",date_labels = "%d %b %Y",expand=c(0,3)) +
   geom_smooth(span=0.2,color="gray20") + 
   theme_coviddk 
@@ -959,7 +959,7 @@ df.antigen_pcr %>%
   geom_point() +
   geom_line() +
   scale_x_date(date_breaks = "7 days",date_labels = "%b %d",expand=c(0,0)) +
-  scale_y_continuous(labels = scales::percent,expand=c(0,0),breaks=seq(0,1,by=0.01),limits=c(0,0.05)) +
+  scale_y_continuous(labels = scales::percent,expand=c(0,0),breaks=seq(0,1,by=0.01),limits=c(0,0.1)) +
   scale_color_discrete(labels = c("False Negative (%)", "False Positive (%)","True Positive (%)")) +
   theme_coviddk +
   labs(title="Fractions of Confirmatory Result (Excluding True Negative)",
@@ -1040,7 +1040,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   labs(title="Daily New Positive Cases",x="Date",y="Daily New Positive Cases",
        caption = timestamp_caption()) +
   scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),Sys.Date()+days(7)),date_labels = "%b %Y") +
-    scale_y_continuous(limits=c(0,NA),breaks=seq(0,5000,by=250),expand=c(0,0),labels=scales::comma) +
+    scale_y_continuous(limits=c(0,NA),breaks=seq(0,10000,by=500),expand=c(0,0),labels=scales::comma) +
   theme_coviddk +
   geom_smooth(span=0.1)
 
@@ -1091,7 +1091,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
 
 ### Number of tests vs. positive-% over time
 
-```{r  }
+```{r fig.height=8 }
 
 read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>% 
   # slice(c(1:(nrow(.)-4))) %>% 
@@ -1108,7 +1108,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   labs(title="Number of PCR Tests vs. Positive-% by Month",
        x="Number of tests",y="Positive Percentage",
        caption = timestamp_caption()) +
-  scale_y_continuous(limits=c(0,NA),breaks=seq(0,1,by=0.0025),labels = scales::percent,expand=c(0,0))+
+  scale_y_continuous(limits=c(0,NA),breaks=seq(0,1,by=0.005),labels = scales::percent,expand=c(0,0))+
   scale_x_continuous(limits=c(0,NA),breaks=seq(0,250000,by=10000),labels=scales::comma)
 
 
