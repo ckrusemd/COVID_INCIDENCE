@@ -440,46 +440,46 @@ df %>%
   geom_abline(slope = -1,intercept = 200) +
   
   geom_line(data=predicted.incidence.descent,aes(x=Date,y=fit),color="blue") +
-  geom_line(data=predicted.incidence.descent,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.descent,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.descent,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.descent,aes(x=Date,y=upr),color="gray60") +
   
-  geom_line(data=predicted.incidence.increase,aes(x=Date,y=fit),color="red") +
-  geom_line(data=predicted.incidence.increase,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.increase,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.increase,aes(x=Date,y=fit),color=rgb(255/255,0/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.increase,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.increase,aes(x=Date,y=upr),color="gray60") +
   
-  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=fit),color="red") +
-  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=fit),color=rgb(255/255,0/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=upr),color="gray60") +
   
-  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=fit),color="green") +
+  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=fit),color=rgb(0/255,255/255,0/255,alpha=0.5)) +
   geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=lwr),color="black") +
   geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=upr),color="black") +
   
-  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=fit),color="red") +
-  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=fit),color=rgb(255/255,0/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=upr),color="gray60") +
   
-  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=fit),color="green") +
-  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=fit),color=rgb(0/255,255/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=upr),color="gray60") +
   
-  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=fit),color="red") +
-  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=fit),color=rgb(255/255,0/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=upr),color="gray60") +
   
-  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=fit),color="green") +
-  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=fit),color=rgb(0/255,255/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=upr),color="gray60") +
   
-  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=fit),color="red") +
-  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=fit),color=rgb(255/255,0/255,0/255,alpha=0.5) ) +
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=upr),color="gray60") +
   
   geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-02-2020"),dmy("01-08-2030"),by="1 day"),"month")),color="gray70") +
-  geom_hline(yintercept = seq(100,2000,by=100),color="gray70") + 
+  geom_hline(yintercept = seq(100,12500,by=500),color="gray70") + 
   
   scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),Sys.Date()+days(30)),date_labels = "%Y %b") +
-  scale_y_continuous(limits=c(0,2000),breaks=seq(0,2000,by=100),expand=c(0,0)) +
+  scale_y_continuous(limits=c(0,12500),breaks=seq(0,12500,by=500),expand=c(0,0)) +
   
   theme_coviddk +
   
@@ -499,46 +499,46 @@ df %>%
   geom_abline(slope = -1,intercept = 200) +
   
   geom_line(data=predicted.incidence.descent,aes(x=Date,y=fit),color="blue") +
-  geom_line(data=predicted.incidence.descent,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.descent,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.descent,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.descent,aes(x=Date,y=upr),color="gray60") +
   
-  geom_line(data=predicted.incidence.increase,aes(x=Date,y=fit),color="red") +
-  geom_line(data=predicted.incidence.increase,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.increase,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.increase,aes(x=Date,y=fit),color=rgb(255/255,0/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.increase,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.increase,aes(x=Date,y=upr),color="gray60") +
   
-  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=fit),color="green") +
-  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=fit),color=rgb(0/255,255/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=upr),color="gray60") +
   
-  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=fit),color="green") +
-  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=fit),color=rgb(0/255,255/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=upr),color="gray60") +
   
-  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=fit),color="red") +
-  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=fit),color=rgb(255/255,0/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=upr),color="gray60") +
   
-  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=fit),color="green") +
-  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=fit),color=rgb(0/255,255/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=upr),color="gray60") +
   
-  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=fit),color="red") +
-  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=fit),color=rgb(255/255,0/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=upr),color="gray60") +
   
-  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=fit),color="green") +
-  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=fit),color=rgb(0/255,255/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=upr),color="gray60") +
   
-  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=fit),color="red") +
-  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=fit),color=rgb(255/255,0/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=lwr),color="gray60") +
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=upr),color="gray60") +
   
-  geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-01-2021"),Sys.Date(),by="1 day"),"month")),color="gray70") +
-  geom_hline(yintercept = seq(0,2000,by=100),color="gray70") + 
+  geom_vline(xintercept = unique(floor_date(seq.Date(dmy("01-01-2021"),Sys.Date()+days(14),by="1 day"),"month")),color="gray70") +
+  geom_hline(yintercept = seq(0,12500,by=250),color="gray70") + 
   
-  scale_x_date(date_breaks = "14 days",limits=c(dmy("01-01-2021"),Sys.Date()),date_labels = "%Y %b") +
-  scale_y_continuous(limits=c(0,2000),breaks=seq(0,2000,by=25),expand=c(0,0)) +
+  scale_x_date(date_breaks = "14 days",limits=c(dmy("01-01-2021"),Sys.Date()+days(14)),date_labels = "%Y %b") +
+  scale_y_continuous(limits=c(0,12500),breaks=seq(0,12500,by=500),expand=c(0,0)) +
   
   
   theme_coviddk +
@@ -554,6 +554,9 @@ df %>%
 recent_30_days$`14 Day Incidence Per 100K` = round(recent_30_days$`14 Day Incidence Per 100K`,0)
 recent_30_days %>%
   arrange(desc(Date)) %>% 
+  dplyr::mutate(`Daily New Positive Cases`=scales::number(`Daily New Positive Cases`,big.mark = ",")) %>% 
+  dplyr::mutate(`14 Day Cumulative Cases`=scales::number(`14 Day Cumulative Cases`,big.mark = ",")) %>% 
+  dplyr::mutate(`14 Day Incidence Per 100K`=scales::number(`14 Day Incidence Per 100K`,big.mark = ",",accuracy = 1)) %>% 
   knitr::kable() 
 
 ```
@@ -567,46 +570,46 @@ df %>%
   ggplot(.,aes(x=Date,y=INCIDENCE)) +
   geom_point() +
   scale_x_date(date_breaks = "2 days",limits=c(Sys.Date()-months(1),Sys.Date()),date_labels = "%A %d %b") +
-  scale_y_continuous(limits=c(0,2000),breaks=seq(0,2000,by=100)) +
   geom_abline(slope = -1,intercept = 200) +
   
   geom_line(data=predicted.incidence.descent,aes(x=Date,y=fit),color="blue") +
   geom_line(data=predicted.incidence.descent,aes(x=Date,y=lwr),color="black") +
   geom_line(data=predicted.incidence.descent,aes(x=Date,y=upr),color="black") +
   
-  geom_line(data=predicted.incidence.increase,aes(x=Date,y=fit),color="red") +
-  geom_line(data=predicted.incidence.increase,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.increase,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.increase,aes(x=Date,y=fit),color=rgb(255/255,0/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.increase,aes(x=Date,y=lwr),color="gray80") +
+  geom_line(data=predicted.incidence.increase,aes(x=Date,y=upr),color="gray80") +
   
-  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=fit),color="green") +
-  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=fit),color=rgb(0/255,255/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=lwr),color="gray80") +
+  geom_line(data=predicted.incidence.increase_2,aes(x=Date,y=upr),color="gray80") +
   
   geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=fit),color="yellow") +
-  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=lwr),color="gray80") +
+  geom_line(data=predicted.incidence.descent.2,aes(x=Date,y=upr),color="gray80") +
   
-  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=fit),color="red") +
-  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=fit),color=rgb(255/255,0/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=lwr),color="gray80") +
+  geom_line(data=predicted.incidence.increase.3,aes(x=Date,y=upr),color="gray80") +
   
-  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=fit),color="green") +
-  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=fit),color=rgb(0/255,255/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=lwr),color="gray80") +
+  geom_line(data=predicted.incidence.decrease.3,aes(x=Date,y=upr),color="gray80") +
   
-  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=fit),color="red") +
-  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=fit),color=rgb(255/255,0/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=lwr),color="gray80") +
+  geom_line(data=predicted.incidence.increase.4,aes(x=Date,y=upr),color="gray80") +
   
-  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=fit),color="green") +
-  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=fit),color=rgb(0/255,255/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=lwr),color="gray80") +
+  geom_line(data=predicted.incidence.decrease.4,aes(x=Date,y=upr),color="gray80") +
   
-  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=fit),color="red") +
-  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=lwr),color="black") +
-  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=upr),color="black") +
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=fit),color=rgb(255/255,0/255,0/255,alpha=0.5)) +
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=lwr),color="gray80") +
+  geom_line(data=predicted.incidence.increase.5,aes(x=Date,y=upr),color="gray80") +
   
-  geom_hline(yintercept = seq(0,2000,by=100),color="gray70") + 
+  geom_hline(yintercept = seq(0,12500,by=500),color="gray70") + 
+  scale_y_continuous(limits=c(0,12500),breaks=seq(0,12500,by=500)) +
   
   
   theme_coviddk +
@@ -879,7 +882,7 @@ ggplot(df.antigen_pcr,aes(x=Dato,y=AG_pos)) +
   labs(title="Daily Positive Antigen Tests",
        x="Date",y="Number of Positive Tests",
        caption = timestamp_caption()) +
-  scale_y_continuous(labels=scales::comma,expand=c(0,0),breaks=seq(0,5000,by=250),limits=c(0,NA)) +
+  scale_y_continuous(labels=scales::comma,expand=c(0,0),breaks=seq(0,15000,by=1000),limits=c(0,NA)) +
   scale_x_date(date_breaks = "14 days",date_labels = "%d %b %Y",expand=c(0,3)) +
   geom_smooth(span=0.2,color="gray20") + 
   theme_coviddk 
@@ -959,7 +962,7 @@ df.antigen_pcr %>%
   geom_point() +
   geom_line() +
   scale_x_date(date_breaks = "7 days",date_labels = "%b %d",expand=c(0,0)) +
-  scale_y_continuous(labels = scales::percent,expand=c(0,0),breaks=seq(0,1,by=0.01),limits=c(0,0.1)) +
+  scale_y_continuous(labels = scales::percent,expand=c(0,0),breaks=seq(0,1,by=0.01),limits=c(0,0.2)) +
   scale_color_discrete(labels = c("False Negative (%)", "False Positive (%)","True Positive (%)")) +
   theme_coviddk +
   labs(title="Fractions of Confirmatory Result (Excluding True Negative)",
@@ -1040,7 +1043,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   labs(title="Daily New Positive Cases",x="Date",y="Daily New Positive Cases",
        caption = timestamp_caption()) +
   scale_x_date(date_breaks = "1 month",limits=c(dmy("01-02-2020"),Sys.Date()+days(7)),date_labels = "%b %Y") +
-    scale_y_continuous(limits=c(0,NA),breaks=seq(0,10000,by=500),expand=c(0,0),labels=scales::comma) +
+    scale_y_continuous(limits=c(0,NA),breaks=seq(0,100000,by=2500),expand=c(0,0),labels=scales::comma) +
   theme_coviddk +
   geom_smooth(span=0.1)
 
@@ -1084,7 +1087,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   labs(title="% Positive Recent Month",x="Date",y="% Positive",
        caption = timestamp_caption()) +
   scale_x_date(date_breaks = "2 day",limits=c(Sys.Date()-months(1),Sys.Date()),date_labels = "%A %d %b") +
-  scale_y_continuous(limits=c(0,0.1),labels = scales::percent_format(accuracy = 0.1),expand=c(0,0),breaks = seq(0,1,by=0.025)) +
+  scale_y_continuous(limits=c(0,0.35),labels = scales::percent_format(accuracy = 0.2),expand=c(0,0),breaks = seq(0,1,by=0.025)) +
   geom_text(aes(label=scales::percent(x = PosPct,accuracy = 0.1)),angle=45,vjust=-0.1,hjust=-0.1,size=3)
 
 ```
@@ -1108,7 +1111,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   labs(title="Number of PCR Tests vs. Positive-% by Month",
        x="Number of tests",y="Positive Percentage",
        caption = timestamp_caption()) +
-  scale_y_continuous(limits=c(0,NA),breaks=seq(0,1,by=0.005),labels = scales::percent,expand=c(0,0))+
+  scale_y_continuous(limits=c(0,NA),breaks=seq(0,1,by=0.01),labels = scales::percent,expand=c(0,0))+
   scale_x_continuous(limits=c(0,NA),breaks=seq(0,250000,by=10000),labels=scales::comma)
 
 
@@ -1722,7 +1725,6 @@ df %>%
 
 ```{r fig.width=6,fig.height=16}
 
-
 # num_cols = ncol(read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Vaccinerede_pr_uge_pr_maalgruppe.csv"),
 #            header=FALSE,
 #            sep = ","))
@@ -1780,6 +1782,7 @@ order = c("1. Plejehjemsbeboere",
           "2. Borgere > 65, praktisk hjælp og personlig pleje",
           "3. Borgere fra årgang 1936 og derunder (85 år og ældre)",
           "4. Personale i sundhedsvæsenet og dele af socialvæsenet",
+          "*4. Personale i sundhedsvæsenet og dele af socialvæsenet",
           "5. Udvalgte patienter med særligt øget risiko",
           "6. Udvalgte pårørende til personer med særligt øget risiko",
           "7. Personer fra årgang 1937-1941",
@@ -1793,6 +1796,7 @@ order = c("1. Plejehjemsbeboere",
           "10D3. Personer fra årgang 1982-1986 og årgang 1992-1996",
           "10D4. Personer fra årgang 1987-1991",
           "11. Personer fra årgang 2006-2009",
+          "12. Personer fra årgang 2010-2017",
           "Resterende")
 
 df %>%
