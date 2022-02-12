@@ -200,7 +200,7 @@ The following files were downloaded:
 
 ```{r echo=FALSE, results= 'TRUE'}
 file.info(list.files(temp_dir,full.names = TRUE)) %>% 
-  dplyr::select(-isdir,-mode,-uid,-gid,-uname,-grname) %>% 
+  dplyr::select(-isdir,-mode) %>% 
   dplyr::mutate(Filename=row.names(.)) %>% 
   dplyr::mutate(Filename=gsub(temp_dir,"",Filename)) %>%
   relocate(Filename) %>% 
@@ -755,6 +755,7 @@ col_number = ncol(read.csv(paste0(temp_dir,"/Cases_by_age.csv"),
            encoding = "UTF-8",
            colClasses=rep("character",col_number)) %>%
     gather(stat,value,Antal_bekræftede_COVID.19:Procent_positive) %>% 
+    rename(Aldersgruppe=X.U.FEFF.Aldersgruppe) %>% 
     filter(!Aldersgruppe %in% "I alt") %>% 
     dplyr::mutate(value=gsub("\\.","",value)) %>% 
     dplyr::mutate(value=gsub(",",".",value)) %>% 
@@ -783,6 +784,7 @@ col_number = ncol(read.csv(paste0(temp_dir,"/Cases_by_sex.csv"),
            colClasses=rep("character",col_number)) %>%
     dplyr::select(-I_alt) %>% 
     gather(stat,value,Kvinder_.procent.:Mænd_.procent.) %>% 
+    rename(Aldersgruppe=X.U.FEFF.Aldersgruppe) %>% 
     separate(value,into = c("num","pct"),sep = " \\(") %>% 
     dplyr::mutate(pct=gsub(")","",pct)) %>% 
     filter(!Aldersgruppe %in% "I alt") %>% 
@@ -1325,7 +1327,7 @@ read.csv(paste0(temp_dir,"/Deaths_over_time.csv"),sep=";") %>%
 df =
   read.csv(list.files(path = temp_dir,
            pattern = "Rt_cases",full.names = T),sep = ";") %>% 
-  rename(date=SampleDate) %>% 
+  rename(date=ï..SampleDate) %>% 
   dplyr::mutate(date=ymd(date),
                 estimate=as.numeric(gsub(",","\\.",estimate)),
                 uncertainty_lower=as.numeric(gsub(",","\\.",uncertainty_lower)),
@@ -1651,7 +1653,9 @@ ggplot(df.predicted,aes(x=date,y=fit)) +
 
 ## 'Målgruppe' coverage
 
-```{r }
+Apparently removed in February 2022.
+
+```{r eval=F}
 
 # num_cols = ncol(read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Maalgrp_Vacc_daekning_Region.csv"),
 #            header=FALSE,
@@ -1723,7 +1727,9 @@ df %>%
 
 ## Weekly 'Målgruppe' Coverage Progression
 
-```{r fig.width=6,fig.height=16}
+Apparently removed February 2022.
+
+```{r eval=F,fig.width=6,fig.height=16}
 
 # num_cols = ncol(read.csv(paste0(temp_dir,"/Vaccine_maalgrupper_DB/Vaccinerede_pr_uge_pr_maalgruppe.csv"),
 #            header=FALSE,
