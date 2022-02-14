@@ -755,7 +755,7 @@ col_number = ncol(read.csv(paste0(temp_dir,"/Cases_by_age.csv"),
            encoding = "UTF-8",
            colClasses=rep("character",col_number)) %>%
     gather(stat,value,Antal_bekræftede_COVID.19:Procent_positive) %>% 
-    rename(Aldersgruppe=X.U.FEFF.Aldersgruppe) %>% 
+    rename(Aldersgruppe=Aldersgruppe) %>% 
     filter(!Aldersgruppe %in% "I alt") %>% 
     dplyr::mutate(value=gsub("\\.","",value)) %>% 
     dplyr::mutate(value=gsub(",",".",value)) %>% 
@@ -784,7 +784,7 @@ col_number = ncol(read.csv(paste0(temp_dir,"/Cases_by_sex.csv"),
            colClasses=rep("character",col_number)) %>%
     dplyr::select(-I_alt) %>% 
     gather(stat,value,Kvinder_.procent.:Mænd_.procent.) %>% 
-    rename(Aldersgruppe=X.U.FEFF.Aldersgruppe) %>% 
+    rename(Aldersgruppe=Aldersgruppe) %>% 
     separate(value,into = c("num","pct"),sep = " \\(") %>% 
     dplyr::mutate(pct=gsub(")","",pct)) %>% 
     filter(!Aldersgruppe %in% "I alt") %>% 
@@ -963,8 +963,8 @@ df.antigen_pcr %>%
   ggplot(.,aes(x=Dato,y=num,color=value)) +
   geom_point() +
   geom_line() +
-  scale_x_date(date_breaks = "7 days",date_labels = "%b %d",expand=c(0,0)) +
-  scale_y_continuous(labels = scales::percent,expand=c(0,0),breaks=seq(0,1,by=0.01),limits=c(0,0.2)) +
+  scale_x_date(date_breaks = "14 days",date_labels = "%b %d",expand=c(0,0)) +
+  scale_y_continuous(labels = scales::percent,expand=c(0,0),breaks=seq(0,1,by=0.025),limits=c(0,0.4)) +
   scale_color_discrete(labels = c("False Negative (%)", "False Positive (%)","True Positive (%)")) +
   theme_coviddk +
   labs(title="Fractions of Confirmatory Result (Excluding True Negative)",
@@ -1089,7 +1089,7 @@ read.csv(paste0(temp_dir,"/Test_pos_over_time.csv"),sep=";") %>%
   labs(title="% Positive Recent Month",x="Date",y="% Positive",
        caption = timestamp_caption()) +
   scale_x_date(date_breaks = "2 day",limits=c(Sys.Date()-months(1),Sys.Date()),date_labels = "%A %d %b") +
-  scale_y_continuous(limits=c(0,0.35),labels = scales::percent_format(accuracy = 0.2),expand=c(0,0),breaks = seq(0,1,by=0.025)) +
+  scale_y_continuous(limits=c(0,0.5),labels = scales::percent_format(accuracy = 0.2),expand=c(0,0),breaks = seq(0,1,by=0.05)) +
   geom_text(aes(label=scales::percent(x = PosPct,accuracy = 0.1)),angle=45,vjust=-0.1,hjust=-0.1,size=3)
 
 ```
@@ -1327,7 +1327,7 @@ read.csv(paste0(temp_dir,"/Deaths_over_time.csv"),sep=";") %>%
 df =
   read.csv(list.files(path = temp_dir,
            pattern = "Rt_cases",full.names = T),sep = ";") %>% 
-  rename(date=ï..SampleDate) %>% 
+  rename(date=SampleDate) %>% 
   dplyr::mutate(date=ymd(date),
                 estimate=as.numeric(gsub(",","\\.",estimate)),
                 uncertainty_lower=as.numeric(gsub(",","\\.",uncertainty_lower)),
